@@ -1,74 +1,54 @@
 # DealMesh Project scope
 
-## Track classification
+## Classification
 
-DealMesh is a GenLayer `PROJECT` contribution. The intended release is a
-complete user-facing application with an Intelligent Contract, wallet-backed
-frontend, live state reads, real writes, transaction recovery, finality-aware
-progress, and a downstream authorization query.
+DealMesh is a GenLayer PROJECT contribution. The repository now contains the
+application-specific Intelligent Contract, wallet-backed GenLayerJS
+frontend, deterministic/mocked tests, and a genuine multi-validator Studio
+finality probe. Bradbury deployment remains a separate release step.
 
-Stage 0 deliberately delivers none of that runtime functionality. It freezes
-the product and trust boundary so Stage 1 can implement it without drifting
-into a different project.
+## In scope
 
-## In scope for the future V1
-
-- two named wallet parties, including autonomous agents controlled by wallets;
-- Party A's immutable bounded requirements, maximum price, latest deadline,
-  price unit, and exact action digest;
-- Party B's immutable bounded requirements, minimum price, earliest deadline,
-  and matching price unit;
-- one exact bounded offer with typed price, typed deadline, exact action
-  digest, and bounded terms;
-- deterministic identity, schema, canonicalization, digest, range, state, and
-  authorization checks;
-- one bounded GenLayer semantic assessment with `MATCH`, `NO_MATCH`, or
-  `INCONCLUSIVE`;
-- strict model-output parsing and custom validator consensus;
-- finality-aware assessment read-back and exact bilateral binding; and
-- a synchronous, read-only `is_bound(deal_id, offer_digest)` consumer
-  interface.
+- two named wallet parties, including autonomous agents;
+- immutable A and B natural-language commitments and typed price/deadline bounds;
+- one exact offer with exact action digest and bounded ordered terms;
+- native sender authorization;
+- NFC/LF canonicalization, UTF-8 bounds, SHA-256 commitment and offer digests;
+- deterministic interval and action-digest checks;
+- one bounded semantic consensus assessment;
+- strict exact JSON verdict parsing;
+- distinct business, integrity, model, consensus, execution, wallet/RPC, and state-mismatch errors;
+- finalized-only assessment and binding callbacks;
+- exact finalized-state is_bound(deal_id, offer_digest) authorization;
+- frontend transaction hash persistence, refresh recovery, finality, execution, callback, and read-back handling.
 
 ## Explicitly out of scope
 
-- procurement marketplace behavior;
-- competitive bid ranking, winner selection, or counteroffers;
-- task delivery, milestone, or post-execution dispute adjudication;
-- fault or responsibility attribution;
-- generic compliance gates or a chatbot;
-- external evidence, web access, arbitrary URLs, or real-world fact claims;
-- token issuance, escrow, payments, payouts, settlement, or money movement;
-- action execution, callbacks, arbitrary downstream writes, or an action
-  registry;
-- hidden backend adjudication or a backend-owned verdict;
-- private-key or seed-phrase handling; and
-- a deployment or write transaction during Stage 0.
+- procurement marketplace behavior or bid ranking;
+- counteroffers, negotiation, winner selection, or task delivery;
+- post-delivery disputes, fault attribution, or external-world evidence;
+- generic compliance gates or chatbot behavior;
+- arbitrary URLs, web access, backend-owned adjudication, or hidden verdicts;
+- tokens, escrow, payments, payouts, settlement, or money movement;
+- action bodies, action execution, arbitrary downstream writes, or an action registry;
+- private-key or seed-phrase handling.
 
-## Product differentiation
+## Differentiation
 
-DealMesh is pre-execution bilateral agreement formation between two
-identified parties. TenderCouncil compares procurement bids. TaskEscrow
-handles post-delivery disputes and payout. AgentFault attributes
-responsibility after a workflow. ClauseGate evaluates a unilateral general
-rule. CommitGate and CommitSeal certify software changes or releases.
-PatchBond and ExploitCouncil focus on software-security findings and
-remediation. UptimeBond focuses on SLA evidence and settlement. DealMesh is
-none of those: its result is an exact agreement authorization before action.
+DealMesh is pre-execution agreement formation between two identified parties.
+TenderCouncil compares procurement bids. TaskEscrow handles delivery disputes and
+payout. AgentFault attributes responsibility after a workflow. ClauseGate is a
+unilateral general-rule gate. CommitGate and CommitSeal certify software
+changes. PatchBond and ExploitCouncil handle security remediation. UptimeBond
+handles SLA evidence and settlement. ClaimCouncil remains deferred because an
+authoritative external-evidence design is not honest within the build window.
 
-ClaimCouncil remains deferred because it would require an authoritative
-external-evidence design that a 24-hour build cannot honestly provide.
+## Release proof and current status
 
-## Release proof standard
+The contract passes direct linter validation under GenVM v0.3.0-rc7 with the
+pinned 1jb runner. The deterministic/mocked contract suite and frontend suite
+are green. Hosted Studio has proved finalized-only child creation and the
+same-contract callback pattern. A full production DealMesh live authorization
+and Bradbury deployment are not claimed until a complete Studio lifecycle
+preflight and the required network funding/credentials are available.
 
-Before a future release is called complete, it must show:
-
-1. direct tests for canonicalization, hashes, bounds, sender checks, state
-   transitions, digest binding, and every error class;
-2. mocked tests for valid verdicts, malformed output, prompt-injection text,
-   validator disagreement, and `INCONCLUSIVE`;
-3. integration coverage for transaction status, finality, execution result,
-   read-back, recovery, and no-rebroadcast behavior; and
-4. a live proof recorded separately only after the current network and SDK
-   baseline are actually validated.
-
-No Stage 0 file implies that these tests or proofs already pass.

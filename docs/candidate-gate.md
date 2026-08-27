@@ -1,46 +1,45 @@
 # DealMesh candidate gate
 
-Access date for this gate: 2026-08-27 (Africa/Lagos).
+Access date: 2026-08-27 (Africa/Lagos).
 
 ## Decision
 
-The candidate passes the Stage 0 design gate. The pass is conditional on
-Stage 1 proving the specified boundary with tests and a real GenLayer
-execution. It is not a claim that an implementation, deployment, or live
-consensus result exists.
+The complete DealMesh V1 scope passes the Project candidate gate. It is a
+pre-execution bilateral agreement authorization primitive, not a generic
+compliance classifier. The gate does not claim participant requirements are
+true in the outside world or that an action is safe.
 
-| Gate | Assessment | Basis and falsifier |
+| Gate | Result | Evidence |
 | --- | --- | --- |
-| A. Track fit | PASS | This is a complete planned user-facing Project application with a bilateral IC workflow, not a standalone IC idea. It would fail if reduced to a storage adapter or cosmetic UI. |
-| B. Real trust problem | PASS | Two named parties need a neutral interpretation of natural-language requirements; a centralized backend or one AI provider must not unilaterally settle the result. |
-| C. GenLayer necessity | PASS | Typed checks are deterministic, but the residual natural-language compatibility question needs semantic judgment and validator consensus. If all requirements become machine-checkable, GenLayer is unnecessary for that portion. |
-| D. Evidence | PASS with limitation | Evidence is exact participant-authored, wallet-authenticated, on-chain commitments and offer data. No external real-world fact is adjudicated. This is integrity evidence, not proof that the requirements are objectively fair or true. |
-| E. Bounded consensus | PASS | The semantic question has one bounded input envelope and exactly three verdicts. A custom leader/validator pair independently reruns the task and compares the parsed enum. |
-| F. State consequence | PASS | Only a finalized successful assessment with `MATCH`, followed by the non-submitter's exact acceptance, creates permanent `BOUND` authorization for one deal and offer digest. |
-| G. Differentiation | PASS | It forms one pre-execution agreement between identified parties; it does not rank bids, resolve delivery disputes, attribute fault, certify software, adjudicate external evidence, or settle money. |
-| H. Continued use | PASS | The same bounded workflow can be reused for many bilateral agent, human, or agent-human agreements without becoming a marketplace or a generic chatbot. |
-| I. Proofability within 24 hours | PASS with delivery risk | The narrow flow is testable with direct-mode storage/admissibility tests, mocked semantic responses, and a small Studio/Bradbury proof. The proof is planned, not available in Stage 0; network/runtime availability could still block live evidence. |
-| J. Factual honesty | PASS | This repository labels all future behavior as planned, records the current official baseline, and makes no claim of deployment, frontend completion, finality proof, or green contract tests. |
+| A. Track fit | PASS | The Intelligent Contract owns identity, commitments, canonical integrity, typed admissibility, semantic consensus, lifecycle, finality callbacks, and exact authorization. |
+| B. Real trust problem | PASS | Two parties need a neutral interpretation; neither offer submitter, backend, frontend, nor one provider can unilaterally authorize. |
+| C. GenLayer necessity | PASS | Deterministic code cannot interpret bounded natural language; validators can independently agree on the exact residual question. |
+| D. Evidence | PASS for V1 | Evidence is authenticated on-chain participant commitments and the exact offer. No external fact or URL is accepted. |
+| E. Bounded consensus | PASS | One fixed prompt envelope and one strict enum. Malformed output and disagreement are technical failures. |
+| F. Consequence | PASS | Only the exact finalized MATCH path can produce exact non-submitter BOUND authorization. No payment or arbitrary action exists. |
+| G. Differentiation | PASS | DealMesh forms a single bilateral agreement before execution; it does not rank bids, verify delivery, attribute fault, certify software, or settle an SLA. |
+| H. Continued use | PASS | The same reusable commitment/offer/authorization flow supports independent human and agent agreements. |
+| I. Proofability | PASS for current scope | 38 deterministic/mocked contract tests, 7 frontend lifecycle tests, linter validation, and a successful hosted multi-validator finalized-callback probe exist. |
+| J. Honesty | PASS | No Bradbury deployment or production live DealMesh authorization is claimed. Hosted proof is limited to the finalized-only callback mechanism. |
 
-## What this gate permits
+## Finality gate
 
-Stage 1 may implement the contract and frontend only if it preserves:
+Official GenLayer Messages guidance documents asynchronous internal messages
+with on="finalized". The hosted Studio probe proved in the selected runtime
+that the child is absent at ACCEPTED, appears only after parent FINALIZED, and
+can write through a same-contract callback. DealMesh uses this path for both
+assessment finalization and binding finalization. A direct bind_match caller
+can create only BINDING_PENDING_FINALITY; it cannot write BOUND.
 
-- one exact semantic question;
-- no model-authored terms or numeric decisions;
-- immutable party commitments;
-- deterministic typed admissibility before semantic execution;
-- strict parser failure for malformed output;
-- no external URLs or evidence in V1;
-- finality-aware application flow with no rebroadcast after uncertainty; and
-- exact downstream binding by both `deal_id` and `offer_digest`.
+The frontend/downstream consumer still reads the finalized state variant and
+waits for the callback child to finalize successfully. This is necessary
+because a non-final read can observe a callback transaction before its own
+finality.
 
-## Smallest safe redesign if a gate fails
+## Safe evidence boundary
 
-If Stage 1 cannot demonstrate finality-aware binding with the supported
-GenLayer APIs, remove binding from the release rather than treating
-`ACCEPTED` as final or trusting a client boolean. If semantic consensus is too
-unstable, retain only a recorded `INCONCLUSIVE`/technical outcome and do not
-add retries that silently create a different offer. If the natural-language
-requirements become unbounded or external, narrow the schema instead of
-adding a backend adjudicator.
+If V1 later needs an external-world fact, the project must first define source
+authority, key binding, freshness, canonical bytes, replay protection, digest,
+and reproducible validator verification. Until then the evidence boundary is
+participant-authenticated on-chain data only.
+

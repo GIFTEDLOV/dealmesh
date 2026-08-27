@@ -1,0 +1,6 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "studio: integration test requiring a running multi-validator GenLayer Studio",
+]
+addopts = "-ra"

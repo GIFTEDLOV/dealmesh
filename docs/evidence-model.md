@@ -1,80 +1,84 @@
 # DealMesh evidence model
 
-## Evidence boundary
+Access date: 2026-08-27 (Africa/Lagos).
 
-V1 adjudicates no external real-world fact. There is no web fetch, arbitrary
-URL, price oracle, identity oracle, delivery proof, document attachment, or
-backend-supplied evidence in the authoritative path.
+## One admissible evidence class
 
-The complete evidence envelope is the exact on-chain participant-authored
-data:
+V1 adjudicates no external real-world fact. The only evidence is the exact
+participant-authored, wallet-authenticated on-chain envelope:
 
-- authenticated sender address for each write;
-- Party A address and nominated Party B address;
-- Party A's immutable bounded requirements, maximum price, latest deadline,
-  price unit, and action digest;
-- Party B's immutable bounded requirements, minimum price, earliest deadline,
-  and price unit;
-- the exact bounded offer submitted by one of the two parties; and
-- canonical hashes, assessment result, and transaction/finality references.
+- native sender address for each write;
+- Party A and nominated Party B addresses;
+- immutable A requirements, price maximum, latest deadline, price unit, and action digest;
+- immutable B requirements, price minimum, earliest deadline, and matching price unit;
+- one exact offer with typed price, deadline, action digest, and ordered terms; and
+- contract-computed commitment, offer, assessment, binding-request, and agreement digests.
 
-The wallet signature authenticates who committed data. Canonicalization and
-hashes bind which bytes and fields were committed. Schema and bounds checks
-make the envelope admissible. Consensus only proves that validators agreed
-about the bounded interpretation; it does not authenticate evidence or make
-the terms legally binding.
+This proves who committed which bytes. It does not prove identity outside the
+wallet, truth, fairness, safety, or legal enforceability.
 
-## Trust order
+## Admission pipeline
 
-DealMesh uses this order and does not skip a layer:
+    sender authentication
+      -> canonicalization and exact UTF-8 encoding
+      -> content integrity and SHA-256 binding
+      -> schema, collection, and bounds validation
+      -> deterministic admissibility and exact action equality
+      -> bounded semantic adjudication
+      -> independent validator consensus
+      -> finalized assessment callback
+      -> exact non-submitter binding request
+      -> finalized binding callback
+      -> finalized-state BOUND authorization
 
-1. sender authentication;
-2. canonicalization;
-3. content integrity and hash binding;
-4. schema and bounds validation;
-5. deterministic admissibility;
-6. semantic adjudication;
-7. validator consensus;
-8. native finality; and
-9. exact `BOUND` authorization.
+Every authorization-relevant step is contract-owned. The frontend may format
+and preflight values for usability, but it is not evidence and cannot decide
+the verdict.
 
-The frontend may format and display inputs but it is not in this trust chain
-as a decision maker. A backend, indexer, or client LLM may assist with UX but
-cannot write a verdict or authorize a different digest.
+## Canonical integrity
 
-## What validators see
+Text is NFC-normalized, CRLF/CR becomes LF, and UTF-8 byte lengths—not
+character counts—are bounded. NUL, leading/trailing whitespace, URL schemes,
+://, and www. references are rejected. Terms are a JSON list of 1..8 unique,
+strictly increasing lowercase keys and canonical values. Duplicate JSON keys
+are rejected. Hashes are lowercase fixed-size SHA-256 strings.
 
-Every leader and validator receives the same canonical, bounded values. Text
-is data, not instructions. The prompt uses fixed labels and delimiters and
-states that text inside those delimiters may contain adversarial instructions
-that must be ignored.
+Versioned length-prefixed encodings bind fixed field order. The deal ID binds
+A, B, A's commitments, action digest, and A's creator nonce. A/B commitment
+digests bind each exact constraint set. The offer digest binds deal ID, price,
+deadline, action digest, and ordered terms. The agreement digest binds only
+the exact deal ID and offer digest.
 
-The semantic call does not receive wallet private data, private keys, hidden
-backend notes, external URLs, or uncommitted counterterms. It receives no
-permission to execute an action. It returns no reasoning that affects state.
+## Semantic boundary
 
-## Integrity and hashes
+Only stored canonical values enter the fixed prompt. Requirement and term text
+is delimited as untrusted data, including prompt-injection text. No web or
+external evidence is used. Validators answer only whether the exact offer
+satisfies both requirement sets and return the exact enum MATCH, NO_MATCH, or
+INCONCLUSIVE.
 
-`deal_id` binds the initial A-authored deal payload. Separate constraint
-digests bind each party's immutable constraint set. `offer_digest` binds the
-deal ID, typed price, typed deadline, exact action digest, and canonical
-ordered terms. The downstream authorization key is the exact pair
-`(deal_id, offer_digest)`.
+The strict parser accepts one JSON object, exactly one key named verdict, and
+one exact enum string. It rejects malformed JSON, duplicate keys, markdown,
+extra keys, trailing data, wrong types, and casing variants. Parser/model
+failures are technical failures. INCONCLUSIVE is a valid consensus result
+only when the input is otherwise admissible and the bounded text is
+substantively insufficient or ambiguous.
 
-Hashes are not secrets and do not provide privacy. Plain participant text is
-on-chain evidence in the planned design. Anyone reading the contract can
-verify the stored canonical fields and recompute the digests.
+## Finality evidence
 
-## Evidence that is intentionally absent
+Consensus is not finality. The assessment parent stores a provisional result;
+an internal emit(on="finalized") callback is the only path to the finalized
+assessment state. bind_match then stores a pending request; its finalized-only
+callback is the only path to BOUND. The frontend and downstream consumer must
+read the latest-final state variant and verify callback execution. A
+latest-nonfinal read, ACCEPTED status, frontend boolean, or cached RPC value is
+never finality evidence.
 
-DealMesh does not claim that:
+## Deliberately absent
 
-- a named party is a real-world legal entity;
-- a price is fair or payable;
-- a deadline will be met;
-- an action digest corresponds to a safe action;
-- requirements are non-discriminatory or legally enforceable; or
-- a semantic `MATCH` guarantees successful execution.
+No arbitrary participant URL, backend fetch, TLS/domain assertion, price
+oracle, governance document, external source, payment, escrow, payout, action
+body, or downstream write is accepted in V1. An external-evidence extension
+would require a separate authenticated evidence design before it could affect
+the semantic question.
 
-Those would require additional evidence and governance that are outside the
-locked V1 scope.

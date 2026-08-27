@@ -1,60 +1,53 @@
-name: Stage 0 artifact checks
+name: DealMesh CI
 
 on:
   push:
   pull_request:
 
 jobs:
-  artifacts:
+  deterministic:
+    runs-on: ubuntu-latest
+    env:
+      GENVM_VERSION: v0.2.12
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install contract tooling
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Run direct and mocked tests
+        run: python -m pytest tests/direct tests/mocked -q
+
+      - name: Lint and validate contract
+        run: genvm-lint check contracts/deal_mesh.py
+
+  frontend:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Verify Stage 0 artifacts and README order
-        uses: actions/setup-python@v5
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.12"
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Validate documentation scaffold
-        run: |
-          python - <<'PY'
-          from pathlib import Path
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
 
-          required = [
-              Path("README.md"),
-              Path("docs/candidate-gate.md"),
-              Path("docs/architecture.md"),
-              Path("docs/evidence-model.md"),
-              Path("docs/security-model.md"),
-              Path("docs/runtime-baseline.md"),
-              Path("docs/project-scope.md"),
-              Path("tests/README.md"),
-              Path("tools/README.md"),
-              Path(".github/workflows/ci.yml"),
-          ]
-          missing = [str(path) for path in required if not path.is_file()]
-          if missing:
-              raise SystemExit(f"Missing Stage 0 artifacts: {missing}")
+      - name: Test frontend
+        working-directory: frontend
+        run: npm test
 
-          readme = Path("README.md").read_text(encoding="utf-8")
-          headings = [
-              "## Product",
-              "## Problem",
-              "## Why GenLayer",
-              "## How it works",
-              "## Architecture",
-              "## Use",
-              "## Live proof",
-              "## Security/trust model",
-              "## Limitations",
-              "## Developer/API detail",
-          ]
-          positions = [readme.find(heading) for heading in headings]
-          if any(position < 0 for position in positions):
-              raise SystemExit("README is missing a required product-order heading")
-          if positions != sorted(positions):
-              raise SystemExit("README headings are not in the required order")
-
-          print("Stage 0 artifacts and README order are valid.")
-          PY
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
