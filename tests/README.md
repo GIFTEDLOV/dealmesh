@@ -16,13 +16,20 @@ same-contract callback that can execute.
     npm test
     npm run build
 
-For the hosted Studio probe:
+For the hosted finality probe:
 
     cd ..
     $env:DEALMESH_STUDIO='1'
     gltest tests/integration/test_finality_authority.py -m studio -q --network studionet --rpc-url https://studio.genlayer.com/api
 
-A full DealMesh lifecycle integration test should be run only when the Studio
-account/model environment is usable. It must remain separate from Direct Mode
-and must record parent and callback hashes without rebroadcasting.
+For the local DealMesh lifecycle integration test:
 
+    cd ..
+    $env:DEALMESH_STUDIO='1'
+    python -m pytest tests/integration -m studio -q
+
+The full DealMesh lifecycle integration test must use at least five configured
+validators, live validator processes, confirmed model/provider health, a
+responding RPC, and funded test accounts. It must remain separate from Direct
+Mode and must record parent and callback hashes without rebroadcasting. The
+local Studio environment currently fails the validator precondition.

@@ -31,7 +31,10 @@ and wrote the marker. The same test also proved a same-contract callback.
 
 The complete DealMesh lifecycle passed in two independent hosted Studio test
 modules on 2026-08-27. Both used two funded accounts, finalized writes, real
-semantic validator execution, and finalized callback/read-back checks.
+semantic validator execution, and finalized callback/read-back checks. A
+separate local Studio preflight returned zero validators from
+`sim_getAllValidators` and reported a dead validator process; that is a local
+infrastructure precondition failure, not a semantic or contract verdict.
 
 DealMesh uses that mechanism twice:
 
@@ -78,10 +81,10 @@ Frontend:
     npm test
     npm run build
 
-Hosted Studio finality and full project integration (when enabled):
+Local Studio finality and full project integration (when enabled):
 
     $env:DEALMESH_STUDIO='1'
-    gltest tests/integration -m studio -q --network studionet --rpc-url https://studio.genlayer.com/api
+    python -m pytest tests/integration -m studio -q
 
 No Bradbury deployment or write is part of this baseline. A future Bradbury
 preflight must be green before any write.

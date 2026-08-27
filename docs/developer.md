@@ -25,11 +25,23 @@ For the frontend:
     npm test
     npm run build
 
-The hosted Studio integration test is opt-in and requires multiple configured
-validators. It is the consensus/finality evidence for the production runner:
+The hosted Studio proof is opt-in and requires at least five configured
+validators, live validator processes, confirmed model/provider health, a
+responding RPC, and funded accounts:
 
     $env:DEALMESH_STUDIO='1'
     gltest tests/integration -m studio -q --network studionet --rpc-url https://studio.genlayer.com/api
+
+For the current local Studio lifecycle test, use the local stack only after
+the same preconditions are verified:
+
+    $env:DEALMESH_STUDIO='1'
+    python -m pytest tests/integration -m studio -q
+
+The local Studio preflight is currently blocked by an empty validator registry
+and a dead validator process. Do not reset Studio volumes or validator state to
+work around this condition. Do not send Bradbury writes from tests or
+development scripts.
 
 Do not run Bradbury writes from tests or development scripts.
 

@@ -47,7 +47,9 @@ authoritative external-evidence design is not honest within the build window.
 
 The contract passes direct linter validation under GenVM v0.3.0-rc7 with the
 pinned 1jb runner. The deterministic/mocked contract suite and frontend suite
-are green. Hosted Studio has proved finalized-only child creation, the
-same-contract callback pattern, and the complete bilateral DealMesh lifecycle
-with ephemeral test state. No public production authorization or Bradbury
-deployment is claimed; those remain separately gated release activities.
+are green. The hosted Studio probe has proved finalized-only child creation and
+the same-contract callback pattern with ephemeral test state. Two hosted
+multi-validator tests also completed the bilateral DealMesh lifecycle. Local
+Studio is currently blocked by an empty validator set, but this is distinct
+from the recorded hosted proof. No public production authorization is claimed.
+Bradbury deployment remains a separately gated release activity.

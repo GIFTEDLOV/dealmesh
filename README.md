@@ -2,10 +2,11 @@
 
 ## Product
 
-DealMesh is a reusable GenLayer Intelligent Contract for authorizing one exact
-bilateral agreement between two wallet parties. It stores immutable
-commitments, enforces typed bounds and hashes, asks validators one bounded
-semantic question, and exposes authorization only for the exact deal and
+DealMesh is a complete GenLayer Project for forming exact bilateral agreements
+between two wallet parties. Its application-specific Intelligent Contract
+owns immutable commitments, bounded semantic consensus, finalized binding,
+and exact downstream authorization. The complete user-facing workflow stores
+typed bounds and hashes and exposes authorization only for the exact deal and
 offer pair that passed the contract state machine.
 
 It never moves money, executes an action, selects financial parameters, ranks
@@ -84,10 +85,12 @@ the action body. Plain participant text is on-chain and not private.
 
 ## Live proof
 
-The repository contains the production contract, deterministic direct tests,
-mocked semantic/validator tests, GenLayerJS lifecycle code, persistence and
-recovery tests, two hosted Studio multi-validator lifecycle tests, and a
-finalized-only callback authority probe.
+The repository contains the application-specific production contract, the
+complete wallet-backed user-facing frontend workflow, deterministic direct
+tests, mocked semantic/validator tests, persistence and recovery tests, and a
+finalized-only callback authority probe. The full DealMesh lifecycle was
+proven on hosted multi-validator Studio; local Studio remains blocked by the
+validator infrastructure described below.
 
 Run the local checks with:
 
@@ -98,16 +101,27 @@ genvm-lint check contracts/deal_mesh.py
 Push-Location frontend; npm ci; npm test; npm run build; Pop-Location
 ```
 
-The Studio test requires a running local multi-validator Studio:
+The Studio test requires a running multi-validator Studio:
 
 ```powershell
 $env:DEALMESH_STUDIO='1'
 python -m pytest tests/integration -m studio -q
 ```
 
-The hosted Studio result is ephemeral test-network evidence, not a public
-deployment or production economic integration. No Bradbury write is sent
-until all preflight checks, including Studio, are green.
+The hosted Studio proof is ephemeral test-network evidence, not a public
+deployment or production economic integration. Local Studio is currently
+blocked by its empty validator registry; this does not invalidate the recorded
+hosted proof. No Bradbury write is sent until all preflight checks are green.
+
+## Gate status
+
+| Gate | Status |
+| --- | --- |
+| STAGE_0_GATE | PASS |
+| IMPLEMENTATION_GATE | PASS |
+| DETERMINISTIC_CI_GATE | PASS |
+| STUDIO_INTEGRATION_GATE | PASS on hosted Studio; local Studio blocked |
+| RELEASE_GATE | BLOCKED pending Bradbury deployment and live-proof preflight |
 
 ## Security/trust model
 
