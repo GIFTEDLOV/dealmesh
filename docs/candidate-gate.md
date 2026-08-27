@@ -31,8 +31,9 @@ safe.
 | STAGE_0_GATE | PASS | Scope and trust boundary are documented. |
 | IMPLEMENTATION_GATE | PASS | Contract and complete user-facing workflow are implemented. |
 | DETERMINISTIC_CI_GATE | PASS | Direct/mocked contract tests, frontend tests/build, and contract validation are green. |
-| STUDIO_INTEGRATION_GATE | BLOCKED by infrastructure | The current local `sim_getAllValidators` returns zero validators and the validator process is dead. Earlier hosted evidence does not clear the current Studio precondition. |
-| RELEASE_GATE | BLOCKED | Current Studio integration is blocked by infrastructure; Bradbury deployment and live proof are not complete. |
+| STUDIO_INTEGRATION_GATE | PASS — hosted multi-validator Studio | Hosted finality-authority and full DealMesh lifecycle tests passed with multiple validators. |
+| LOCAL_STUDIO_HEALTH | BLOCKED — zero configured local validators | The current local `sim_getAllValidators` returns zero validators; this is a separate development-environment status and does not invalidate hosted proof. |
+| RELEASE_GATE | PENDING BRADBURY DEPLOYMENT AND LIVE PROOF | Bradbury deployment and live proof have not yet been performed. |
 
 ## Finality gate
 

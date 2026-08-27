@@ -20,6 +20,76 @@
     "deployer": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
     "partyB": "0x6311de989ab01ae4da77d36cc45d495fbcd4b7a8"
   },
+  "writeRecordSchema": {
+    "operation": "string",
+    "expectedPrecondition": "string",
+    "sender": "0x... or contract",
+    "returnedHash": "0x...",
+    "status": "SUBMITTED|ACCEPTED|FINALIZED|FAILED|UNKNOWN",
+    "executionResult": "FINISHED_WITH_RETURN|FAILED|UNKNOWN",
+    "triggeredCallbackHash": "0x... or null",
+    "resultingState": "string",
+    "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/{hash}"
+  },
+  "writes": [],
+  "plannedWrites": [
+    {
+      "operation": "deploy",
+      "expectedPrecondition": "chainId 4221; clean worktree; source digest matches contract.sourceSha256; deployer balance preflight is sufficient",
+      "sender": "deployer",
+      "resultingState": "DealMesh deployed and initialized",
+      "explorerUrl": null
+    },
+    {
+      "operation": "create_deal",
+      "expectedPrecondition": "deployed contract is addressable; sender is configured deployer/Party A; no deal exists",
+      "sender": "deployer",
+      "resultingState": "CREATED_A_COMMITTED",
+      "explorerUrl": null
+    },
+    {
+      "operation": "accept_participation",
+      "expectedPrecondition": "deal is CREATED_A_COMMITTED; sender is distinct configured Party B",
+      "sender": "partyB",
+      "resultingState": "ACTIVE_B_COMMITTED",
+      "explorerUrl": null
+    },
+    {
+      "operation": "submit_offer",
+      "expectedPrecondition": "deal is ACTIVE_B_COMMITTED; sender is an authorized party; offer bounds and exact action digest pass",
+      "sender": "deployer",
+      "resultingState": "OFFER_SUBMITTED",
+      "explorerUrl": null
+    },
+    {
+      "operation": "assess_offer",
+      "expectedPrecondition": "deal is OFFER_SUBMITTED; exact offer digest matches stored offer",
+      "sender": "deployer",
+      "resultingState": "assessment pending FINALIZED callback",
+      "explorerUrl": null
+    },
+    {
+      "operation": "finalize_assessment",
+      "expectedPrecondition": "assess_offer parent transaction is FINALIZED with successful execution",
+      "sender": "contract",
+      "resultingState": "ASSESSED_MATCH_FINALIZED or another finalized assessment state",
+      "explorerUrl": null
+    },
+    {
+      "operation": "bind_match",
+      "expectedPrecondition": "exact assessment is ASSESSED_MATCH_FINALIZED; sender is the non-submitting Party B",
+      "sender": "partyB",
+      "resultingState": "binding pending FINALIZED callback",
+      "explorerUrl": null
+    },
+    {
+      "operation": "finalize_binding",
+      "expectedPrecondition": "bind_match parent transaction is FINALIZED with successful execution and expected pending state is read back",
+      "sender": "contract",
+      "resultingState": "BOUND for the exact (deal_id, offer_digest)",
+      "explorerUrl": null
+    }
+  ],
   "fixture": {
     "partyARequirements": "use the exact secure-email channel",
     "partyBRequirements": "use the exact secure-email channel",
@@ -31,6 +101,8 @@
     "offerPrice": 500,
     "offerDeadline": 2000000000,
     "actionDigest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "offerSubmittedBy": "deployer",
+    "binder": "partyB",
     "terms": [
       {
         "key": "channel",
