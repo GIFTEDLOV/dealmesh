@@ -1,5 +1,7 @@
 # DealMesh
 
+## Product
+
 DealMesh is a reusable GenLayer Intelligent Contract for authorizing one exact
 bilateral agreement between two wallet parties. It stores immutable
 commitments, enforces typed bounds and hashes, asks validators one bounded
@@ -7,8 +9,8 @@ semantic question, and exposes authorization only for the exact deal and
 offer pair that passed the contract state machine.
 
 It never moves money, executes an action, selects financial parameters, ranks
-offers, or lets a model create or alter terms. The frontend is a thin
-GenLayerJS lifecycle client; it does not compute or override authorization.
+offers, or lets a model create or alter terms. The frontend is a wallet-backed
+GenLayerJS application; it does not compute or override authorization.
 
 ## Problem
 
@@ -71,26 +73,26 @@ See [`docs/architecture.md`](docs/architecture.md),
 [`docs/security-model.md`](docs/security-model.md), and
 [`docs/evidence-model.md`](docs/evidence-model.md).
 
-## Use and limits
+## Use
 
 DealMesh is intended for repeated pre-execution agreements between a human,
 agent, or agent-human pair: an operating window, service condition, or exact
-execution action. It is not a marketplace, delivery dispute system, escrow,
-payout service, financial oracle, or legal-entity verifier.
+execution action.
 
 The action digest is an identifier only. DealMesh does not inspect or execute
 the action body. Plain participant text is on-chain and not private.
 
-## Validation and proof status
+## Live proof
 
 The repository contains the production contract, deterministic direct tests,
 mocked semantic/validator tests, GenLayerJS lifecycle code, persistence and
-recovery tests, and a five-validator-shaped Studio integration test.
+recovery tests, two hosted Studio multi-validator lifecycle tests, and a
+finalized-only callback authority probe.
 
 Run the local checks with:
 
 ```powershell
-$env:GENVM_VERSION='v0.2.12'
+$env:GENVM_VERSION='v0.3.0-rc7'
 python -m pytest tests/direct tests/mocked -q
 genvm-lint check contracts/deal_mesh.py
 Push-Location frontend; npm ci; npm test; npm run build; Pop-Location
@@ -103,11 +105,32 @@ $env:DEALMESH_STUDIO='1'
 python -m pytest tests/integration -m studio -q
 ```
 
-No Bradbury write is sent until all preflight checks, including Studio, are
-green. A successful local test is not a claim that a Bradbury deployment or
-production economic integration exists.
+The hosted Studio result is ephemeral test-network evidence, not a public
+deployment or production economic integration. No Bradbury write is sent
+until all preflight checks, including Studio, are green.
 
-## Developer/API surface
+## Security/trust model
+
+The trust order is sender authentication, canonicalization, content-integrity
+hashing, schema and bounds validation, deterministic admissibility, semantic
+adjudication, validator consensus, native finality, and exact `BOUND`
+authorization. Participant text and model output are untrusted. The contract
+rejects malformed output, prompt-injection attempts that do not produce the
+strict enum, unauthorized callers, stale digests, pending finality, and every
+non-exact consumer key. See [`docs/security-model.md`](docs/security-model.md)
+and [`docs/evidence-model.md`](docs/evidence-model.md).
+
+## Limitations
+
+V1 does not provide legal identity, truth or safety guarantees, external-world
+evidence, web access, payments, escrow, payouts, settlement, action execution,
+counteroffers, negotiation, delivery disputes, or privacy for on-chain text.
+An action digest commits only an identifier; DealMesh never reads the action
+body. An `INCONCLUSIVE` verdict is a valid semantic result, while model,
+consensus, execution, wallet/RPC, timeout, and state-mismatch failures remain
+technical failures with no fallback verdict.
+
+## Developer/API detail
 
 Writes:
 

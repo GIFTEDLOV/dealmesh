@@ -29,6 +29,10 @@ at parent ACCEPTED, triggered transaction IDs were empty and the receiver had
 no marker; after parent FINALIZED, one child appeared, finalized successfully,
 and wrote the marker. The same test also proved a same-contract callback.
 
+The complete DealMesh lifecycle passed in two independent hosted Studio test
+modules on 2026-08-27. Both used two funded accounts, finalized writes, real
+semantic validator execution, and finalized callback/read-back checks.
+
 DealMesh uses that mechanism twice:
 
 1. assess_offer stores a provisional assessment and schedules
@@ -81,4 +85,3 @@ Hosted Studio finality and full project integration (when enabled):
 
 No Bradbury deployment or write is part of this baseline. A future Bradbury
 preflight must be green before any write.
-

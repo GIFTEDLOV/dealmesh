@@ -19,8 +19,8 @@ true in the outside world or that an action is safe.
 | F. Consequence | PASS | Only the exact finalized MATCH path can produce exact non-submitter BOUND authorization. No payment or arbitrary action exists. |
 | G. Differentiation | PASS | DealMesh forms a single bilateral agreement before execution; it does not rank bids, verify delivery, attribute fault, certify software, or settle an SLA. |
 | H. Continued use | PASS | The same reusable commitment/offer/authorization flow supports independent human and agent agreements. |
-| I. Proofability | PASS for current scope | 38 deterministic/mocked contract tests, 7 frontend lifecycle tests, linter validation, and a successful hosted multi-validator finalized-callback probe exist. |
-| J. Honesty | PASS | No Bradbury deployment or production live DealMesh authorization is claimed. Hosted proof is limited to the finalized-only callback mechanism. |
+| I. Proofability | PASS for current scope | 38 deterministic/mocked contract tests, 9 frontend lifecycle tests, linter validation, two hosted multi-validator DealMesh lifecycle tests, and a successful finalized-callback authority probe exist. |
+| J. Honesty | PASS | No Bradbury deployment or public production authorization is claimed. Hosted proof uses ephemeral Studio state and is reported separately from a production deployment. |
 
 ## Finality gate
 
@@ -42,4 +42,3 @@ If V1 later needs an external-world fact, the project must first define source
 authority, key binding, freshness, canonical bytes, replay protection, digest,
 and reproducible validator verification. Until then the evidence boundary is
 participant-authenticated on-chain data only.
-

@@ -2,8 +2,6 @@ import os
 
 import pytest
 
-import pytest
-
 from gltest import get_contract_factory, get_gl_client
 from gltest.assertions import tx_execution_succeeded
 from gltest.types import CalldataAddress, TransactionStatus

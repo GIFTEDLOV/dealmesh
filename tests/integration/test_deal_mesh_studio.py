@@ -9,13 +9,13 @@ pytestmark = pytest.mark.studio
 
 if os.environ.get("DEALMESH_STUDIO") != "1":
     pytest.skip(
-        "Set DEALMESH_STUDIO=1 with a configured five-validator Studio endpoint",
+        "Set DEALMESH_STUDIO=1 with a configured multi-validator Studio endpoint",
         allow_module_level=True,
     )
 
 from gltest import get_accounts, get_contract_factory
 from gltest.assertions import tx_execution_succeeded
-from gltest.types import TransactionStatus
+from gltest.types import CalldataAddress, TransactionStatus
 
 
 TERMS = json.dumps([{"key": "channel", "value": "secure-email"}])
@@ -31,24 +31,28 @@ def _finalized(**kwargs):
     return kwargs
 
 
-def test_studio_five_validator_shaped_bilateral_flow():
+def _addr(account):
+    return CalldataAddress(bytes.fromhex(account.address[2:]))
+
+
+def test_studio_multi_validator_bilateral_flow():
     accounts = get_accounts()
     if len(accounts) < 2:
         pytest.fail("Studio integration requires two configured funded accounts")
     alice, bob = accounts[:2]
-    factory = get_contract_factory(contract_file_path="deal_mesh.py")
+    factory = get_contract_factory(contract_file_path="../contracts/deal_mesh.py")
     mesh = factory.deploy(
         account=alice,
         wait_transaction_status=TransactionStatus.FINALIZED,
         wait_interval=1000,
         wait_retries=180,
     )
-    alice_mesh = mesh.connect(alice)
-    bob_mesh = mesh.connect(bob)
+    alice_mesh = mesh
+    bob_mesh = factory.build_contract(mesh.address, account=bob)
 
     create_receipt = alice_mesh.create_deal(
         args=[
-            bob.address,
+            _addr(bob),
             "USD",
             1000,
             4102444800,
@@ -57,7 +61,7 @@ def test_studio_five_validator_shaped_bilateral_flow():
         ]
     ).transact(**_finalized())
     assert tx_execution_succeeded(create_receipt)
-    deal_id = alice_mesh.get_latest_deal_for(args=[alice.address]).call()
+    deal_id = alice_mesh.get_latest_deal_for(args=[_addr(alice)]).call()
     assert deal_id
     assert (
         json.loads(alice_mesh.get_deal(args=[deal_id]).call())["party_a"]

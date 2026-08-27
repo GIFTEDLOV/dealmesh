@@ -7,8 +7,6 @@ on:
 jobs:
   deterministic:
     runs-on: ubuntu-latest
-    env:
-      GENVM_VERSION: v0.2.12
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -25,6 +23,8 @@ jobs:
         run: python -m pytest tests/direct tests/mocked -q
 
       - name: Lint and validate contract
+        env:
+          GENVM_VERSION: v0.3.0-rc7
         run: genvm-lint check contracts/deal_mesh.py
 
   frontend:

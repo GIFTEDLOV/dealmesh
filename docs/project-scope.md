@@ -47,8 +47,7 @@ authoritative external-evidence design is not honest within the build window.
 
 The contract passes direct linter validation under GenVM v0.3.0-rc7 with the
 pinned 1jb runner. The deterministic/mocked contract suite and frontend suite
-are green. Hosted Studio has proved finalized-only child creation and the
-same-contract callback pattern. A full production DealMesh live authorization
-and Bradbury deployment are not claimed until a complete Studio lifecycle
-preflight and the required network funding/credentials are available.
-
+are green. Hosted Studio has proved finalized-only child creation, the
+same-contract callback pattern, and the complete bilateral DealMesh lifecycle
+with ephemeral test state. No public production authorization or Bradbury
+deployment is claimed; those remain separately gated release activities.
