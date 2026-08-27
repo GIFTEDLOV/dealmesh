@@ -120,7 +120,7 @@ hosted proof. No Bradbury write is sent until all preflight checks are green.
 | STAGE_0_GATE | PASS |
 | IMPLEMENTATION_GATE | PASS |
 | DETERMINISTIC_CI_GATE | PASS |
-| STUDIO_INTEGRATION_GATE | PASS on hosted Studio; local Studio blocked |
+| STUDIO_INTEGRATION_GATE | BLOCKED by infrastructure |
 | RELEASE_GATE | BLOCKED pending Bradbury deployment and live-proof preflight |
 
 ## Security/trust model
