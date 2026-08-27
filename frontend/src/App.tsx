@@ -5,6 +5,7 @@ import {
   finalizeAndReadBack,
   finalizeWithTriggeredReadBack,
   LifecycleError,
+  exactReadBack,
   type ReadBackExpectation,
 } from "./lifecycle.js";
 import {
@@ -117,17 +118,18 @@ export default function App() {
     return network === "studionet" ? studionet : testnetBradbury;
   }, [network]);
 
-  const refresh = useCallback(async (frontend: DealMeshFrontend = app ?? undefined!) => {
-    if (!frontend || !dealId) return;
-    const nextDeal = parseView(await frontend.read("get_deal", [dealId]));
+  const refresh = useCallback(async (frontend?: DealMeshFrontend) => {
+    const activeFrontend = frontend ?? app;
+    if (!activeFrontend || !dealId) return;
+    const nextDeal = parseView(await activeFrontend.read("get_deal", [dealId]));
     setDeal(nextDeal);
-    const nextOfferRaw = await frontend.read("get_offer", [dealId]);
+    const nextOfferRaw = await activeFrontend.read("get_offer", [dealId]);
     setOffer(nextOfferRaw ? parseView(nextOfferRaw) : null);
-    const nextAssessmentRaw = await frontend.read("get_assessment", [dealId]);
+    const nextAssessmentRaw = await activeFrontend.read("get_assessment", [dealId]);
     setAssessment(nextAssessmentRaw ? parseView(nextAssessmentRaw) : null);
     const nextOfferDigest = typeof nextDeal.offer_digest === "string" ? nextDeal.offer_digest : "";
     const nextBound = nextOfferDigest
-      ? await frontend.read("is_bound", [dealId, nextOfferDigest], true)
+      ? await activeFrontend.read("is_bound", [dealId, nextOfferDigest], true)
       : false;
     setBound(nextBound === true);
     setRecords(storeRef.current.list());
@@ -142,6 +144,9 @@ export default function App() {
         "ASSESSED_MATCH_PENDING_FINALITY",
         "ASSESSED_NO_MATCH_PENDING_FINALITY",
         "ASSESSED_INCONCLUSIVE_PENDING_FINALITY",
+        "ASSESSED_MATCH_FINALIZED",
+        "ASSESSED_NO_MATCH",
+        "ASSESSED_INCONCLUSIVE",
       ]);
       const callback: ReadBackExpectation = {
         read: async () => ({ state: parseView(await frontend.read("get_deal", [id], true)).state }),
@@ -155,7 +160,7 @@ export default function App() {
     } else if (record.method === "bind_match") {
       const id = String(args[0]);
       const digest = String(args[1]);
-      const parent = expectedDealState(frontend, id, ["BINDING_PENDING_FINALITY"]);
+      const parent = expectedDealState(frontend, id, ["BINDING_PENDING_FINALITY", "BOUND"]);
       const callback: ReadBackExpectation = {
         read: async () => ({
           state: parseView(await frontend.read("get_deal", [id], true)).state,
@@ -183,9 +188,10 @@ export default function App() {
 
   const recover = useCallback(async (frontend: DealMeshFrontend) => {
     const known = storeRef.current.list().filter((record) =>
-      pendingTransactions(storeRef.current).some((pending) => pending.id === record.id)
+      record.method !== "<triggered-finality-callback>"
+      && (pendingTransactions(storeRef.current).some((pending) => pending.id === record.id)
       || record.method === "assess_offer"
-      || record.method === "bind_match",
+      || record.method === "bind_match"),
     );
     for (const record of known) {
       try {
@@ -236,17 +242,31 @@ export default function App() {
   async function execute(
     method: string,
     args: readonly CalldataEncodable[],
+    precondition?: ReadBackExpectation,
     parentReadBack?: ReadBackExpectation,
     callbackReadBack?: ReadBackExpectation,
-  ): Promise<void> {
+  ): Promise<boolean> {
     if (!app) {
       setError({ category: "wallet-rpc", message: "Connect a wallet before writing." });
-      return;
+      return false;
     }
     setBusy(true);
     setError(null);
     try {
       setProgress({ method, status: "PRECONDITION_READ" });
+      if (precondition) {
+        const actual = await precondition.read();
+        const matches = precondition.verify
+          ? precondition.verify(actual)
+          : exactReadBack(actual, precondition.expected);
+        if (!matches) {
+          throw new LifecycleError(
+            "READBACK_MISMATCH",
+            "The live precondition state is not admissible for this action.",
+            "state-mismatch",
+          );
+        }
+      }
       const submitted = await app.submit(method, args, parentReadBack);
       setProgress({ method, status: "BROADCAST_ONCE / HASH_PERSISTED", hash: submitted.hash });
       if (parentReadBack && callbackReadBack) {
@@ -257,9 +277,11 @@ export default function App() {
       setProgress({ method, status: "FINALIZED / EXECUTION_SUCCESS / READ_BACK", hash: submitted.hash });
       setRecords(storeRef.current.list());
       await refresh(app);
+      return true;
     } catch (writeError) {
       setError(displayError(writeError));
       setRecords(storeRef.current.list());
+      return false;
     } finally {
       setBusy(false);
     }
@@ -267,14 +289,18 @@ export default function App() {
 
   async function createDeal(): Promise<void> {
     if (!app || !account) return;
-    await execute("create_deal", [
+    const completed = await execute("create_deal", [
       createForm.partyB,
       createForm.priceUnit,
       BigInt(createForm.maxPrice),
       BigInt(createForm.latestDeadline),
       createForm.requirements,
       createForm.actionDigest,
-    ]);
+    ], {
+      read: async () => app.read("get_latest_deal_for", [account], true),
+      verify: () => true,
+    });
+    if (!completed) return;
     const latest = await app.read("get_latest_deal_for", [account], true);
     if (typeof latest !== "string" || !latest) {
       setError({ category: "state-mismatch", message: "CREATE finalized but no creator-bound deal ID was read back." });
@@ -292,7 +318,7 @@ export default function App() {
       BigInt(acceptForm.minPrice),
       BigInt(acceptForm.earliestDeadline),
       acceptForm.requirements,
-    ], expectedDealState(app, dealId, ["ACTIVE_B_COMMITTED"]));
+    ], expectedDealState(app, dealId, ["CREATED_A_COMMITTED"]), expectedDealState(app, dealId, ["ACTIVE_B_COMMITTED"]));
   }
 
   async function submitOffer(): Promise<void> {
@@ -303,7 +329,7 @@ export default function App() {
       BigInt(offerForm.deadline),
       offerForm.actionDigest,
       offerForm.terms,
-    ], {
+    ], expectedDealState(app, dealId, ["ACTIVE_B_COMMITTED"]), {
       read: async () => ({
         state: parseView(await app.read("get_deal", [dealId], true)).state,
         offer: parseView(await app.read("get_offer", [dealId], true)),
@@ -319,10 +345,14 @@ export default function App() {
 
   async function assessOffer(): Promise<void> {
     if (!app || !dealId) return;
+    const precondition = expectedDealState(app, dealId, ["OFFER_SUBMITTED"]);
     const pending = expectedDealState(app, dealId, [
       "ASSESSED_MATCH_PENDING_FINALITY",
       "ASSESSED_NO_MATCH_PENDING_FINALITY",
       "ASSESSED_INCONCLUSIVE_PENDING_FINALITY",
+      "ASSESSED_MATCH_FINALIZED",
+      "ASSESSED_NO_MATCH",
+      "ASSESSED_INCONCLUSIVE",
     ]);
     const callback: ReadBackExpectation = {
       read: async () => ({ state: parseView(await app.read("get_deal", [dealId], true)).state }),
@@ -330,13 +360,13 @@ export default function App() {
         String((value as JsonRecord).state),
       ),
     };
-    await execute("assess_offer", [dealId], pending, callback);
+    await execute("assess_offer", [dealId], precondition, pending, callback);
   }
 
   async function bindMatch(): Promise<void> {
     if (!app || !dealId || typeof deal?.offer_digest !== "string") return;
     const digest = deal.offer_digest;
-    await execute("bind_match", [dealId, digest], expectedDealState(app, dealId, ["BINDING_PENDING_FINALITY"]), {
+    await execute("bind_match", [dealId, digest], expectedDealState(app, dealId, ["ASSESSED_MATCH_FINALIZED"]), expectedDealState(app, dealId, ["BINDING_PENDING_FINALITY", "BOUND"]), {
       read: async () => ({
         state: parseView(await app.read("get_deal", [dealId], true)).state,
         bound: await app.read("is_bound", [dealId, digest], true),

@@ -153,7 +153,7 @@ export async function finalizeAndReadBack(
   }
 
   if (readBack) {
-    const actual = await readBack.read();
+  const actual = await readBack.read();
     const matches = readBack.verify
       ? readBack.verify(actual)
       : exactReadBack(actual, readBack.expected);
@@ -184,19 +184,43 @@ export async function finalizeWithTriggeredReadBack(
   record: PersistedTransaction,
   parentReadBack: ReadBackExpectation,
   callbackReadBack: ReadBackExpectation,
+  options: {
+    readonly triggeredRetries?: number;
+    readonly triggeredIntervalMs?: number;
+  } = {},
 ): Promise<unknown> {
   await finalizeAndReadBack(client, store, record, parentReadBack);
-  const childHashes = await client.getTriggeredTransactionIds({
-    hash: record.hash as Hash,
-  });
-  const childHash = childHashes[0];
+  const storedParent = store.get(record.id) ?? record;
+  let childHash: Hash | undefined = storedParent.triggeredHash as Hash | undefined;
+  const retries = options.triggeredRetries ?? 60;
+  const intervalMs = options.triggeredIntervalMs ?? 1_000;
+  for (let attempt = 0; !childHash && attempt < retries; attempt += 1) {
+    const childHashes = await client.getTriggeredTransactionIds({
+      hash: record.hash as Hash,
+    });
+    if (childHashes.length > 1) {
+      throw new LifecycleError(
+        "CONSENSUS_FAILURE",
+        "The finalized parent emitted more than one callback; exact callback binding is ambiguous.",
+        "consensus",
+      );
+    }
+    childHash = childHashes[0];
+    if (!childHash && attempt + 1 < retries) {
+      await new Promise<void>((resolve) => setTimeout(resolve, intervalMs));
+    }
+  }
   if (!childHash) {
     throw new LifecycleError(
       "FINALITY_NOT_REACHED",
-      "The finalized parent has no discoverable triggered finality callback.",
+      "The finalized parent has no discoverable triggered finality callback yet.",
       "consensus",
     );
   }
+
+  // Persist the discovered internal-message hash before waiting on it. A
+  // refresh now resumes against this exact child and never rebroadcasts.
+  store.put({ ...storedParent, triggeredHash: childHash });
 
   const childReceipt = await client.waitForTransactionReceipt({
     hash: childHash,
@@ -204,12 +228,13 @@ export async function finalizeWithTriggeredReadBack(
   });
   const execution = childReceipt.txExecutionResultName ?? ExecutionResult.NOT_VOTED;
   const childRecord: PersistedTransaction = {
-    id: `${record.id}:triggered:${childHash}`,
+    id: `${record.id}:triggered`,
     hash: childHash,
     method: "<triggered-finality-callback>",
     args: [],
     createdAt: record.createdAt,
     status: "SUBMITTED",
+    parentId: record.id,
   };
   if (execution !== ExecutionResult.FINISHED_WITH_RETURN) {
     store.put({ ...childRecord, status: "FAILED", executionResultName: execution });

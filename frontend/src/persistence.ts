@@ -19,6 +19,9 @@ export interface PersistedTransaction {
   readonly executionResultName?: string;
   readonly expectedReadBack?: unknown;
   readonly error?: string;
+  /** Hash of the contract-owned finalized callback discovered for this parent. */
+  readonly triggeredHash?: string;
+  readonly parentId?: string;
 }
 
 export interface TransactionStore {

@@ -121,6 +121,40 @@ describe("finalized lifecycle", () => {
     expect(getTriggeredTransactionIds).toHaveBeenCalledWith({ hash: HASH });
     expect(waitForTransactionReceipt).toHaveBeenCalledTimes(2);
     expect(store.list().some((item) => item.hash === callbackHash && item.status === "FINALIZED")).toBe(true);
+    expect(store.get("parent")?.triggeredHash).toBe(callbackHash);
+  });
+
+  it("polls for a callback after parent finality without any rebroadcast", async () => {
+    const store = new MemoryTransactionStore();
+    const record = {
+      id: "parent-late",
+      hash: HASH,
+      method: "bind_match",
+      args: ["deal", "offer"],
+      createdAt: 1,
+      status: "SUBMITTED" as const,
+    };
+    store.put(record);
+    let calls = 0;
+    const callbackHash = `0x${"4".repeat(64)}` as `0x${string}`;
+    const getTriggeredTransactionIds = vi.fn(async () => {
+      calls += 1;
+      return calls === 1 ? [] : [callbackHash];
+    });
+    const waitForTransactionReceipt = vi.fn(async () => ({
+      txExecutionResultName: ExecutionResult.FINISHED_WITH_RETURN,
+    }));
+    await finalizeWithTriggeredReadBack(
+      { waitForTransactionReceipt, getTriggeredTransactionIds } as never,
+      store,
+      record,
+      { read: async () => ({ state: "BINDING_PENDING_FINALITY" }), expected: { state: "BINDING_PENDING_FINALITY" } },
+      { read: async () => ({ state: "BOUND", bound: true }), expected: { bound: true, state: "BOUND" } },
+      { triggeredRetries: 2, triggeredIntervalMs: 0 },
+    );
+    expect(getTriggeredTransactionIds).toHaveBeenCalledTimes(2);
+    expect(store.get("parent-late")?.triggeredHash).toBe(callbackHash);
+    expect(store.get("parent-late:triggered")?.parentId).toBe("parent-late");
   });
 
   it("compares read-back objects independent of key order", () => {
