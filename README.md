@@ -97,8 +97,13 @@ blocked by the validator infrastructure described below.
 Bradbury has a finalized, successfully executed deployment at
 `0xCEFf63f9d66b4F60E854Ef3Eb4d2a35096037247` from deployment transaction
 `0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397`.
-The live DealMesh lifecycle has not started: no `create_deal` hash exists, and
-there is no Bradbury `MATCH`, callback, `BOUND`, or `is_bound` evidence.
+The one final authorized `create_deal` attempt returned
+`0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f`, but
+its Bradbury receipt is `ACCEPTED` with `FINISHED_WITH_ERROR`; the execution
+trace is `CANONICALIZATION_FAILED`. No deal was created, no finality callback
+or semantic assessment ran, and no Bradbury `MATCH`, `BOUND`, or `is_bound`
+evidence exists. The live DealMesh lifecycle remains unstarted. The post-attempt nonce is `204/204` and
+`get_latest_deal_for(deployer)` remains empty.
 
 Run the local checks with:
 
@@ -119,9 +124,10 @@ python -m pytest tests/integration -m studio -q
 The hosted Studio evidence is ephemeral test-network evidence, not a public
 deployment or production economic integration. Local Studio is currently
 blocked by its empty validator registry; this does not invalidate the recorded
-hosted semantic/callback exercise. Release remains blocked by Bradbury RPC
-capacity rejections and unfinished lifecycle/release packaging. No additional
-Bradbury write is sent by CI or development scripts.
+hosted semantic/callback exercise. Release remains blocked because the final
+Bradbury create attempt failed before deal creation and the frontend could not
+be published: no authenticated Vercel session or usable GitHub Pages
+configuration is available. No further Bradbury write is authorized or sent.
 
 ## Gate status
 
@@ -132,13 +138,14 @@ Bradbury write is sent by CI or development scripts.
 | DETERMINISTIC_CI_GATE | PASS |
 | STUDIO_INTEGRATION_GATE | PASS — hosted multi-validator Studio implementation evidence; no independent BOUND receipt proof |
 | LOCAL_STUDIO_HEALTH | BLOCKED — zero configured local validators |
-| RELEASE_GATE | BLOCKED - Bradbury RPC capacity and unfinished live proof/release packaging |
+| RELEASE_GATE | BLOCKED - create_deal execution failure and unavailable public hosting |
 
 The hosted test implementations exercised multi-validator semantics and
 finalized callbacks, but the preserved repository evidence does not contain
 sufficient immutable receipts or hashes to independently prove a final
 `BOUND` authorization. The finalized Bradbury deployment has no lifecycle
-state beyond initialization; release remains blocked by RPC capacity.
+state beyond initialization; the sole final create attempt failed with
+`CANONICALIZATION_FAILED`, and no public frontend URL exists.
 
 ## Security/trust model
 

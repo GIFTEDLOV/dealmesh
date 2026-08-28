@@ -6,7 +6,8 @@ DealMesh is a GenLayer PROJECT contribution. The repository now contains the
 application-specific Intelligent Contract, wallet-backed GenLayerJS
 frontend, deterministic/mocked tests, and a genuine multi-validator Studio
 finality probe. Bradbury deployment is finalized and successfully executed,
-but the live lifecycle remains unstarted.
+but the live lifecycle remains unstarted after the final create attempt failed
+before deal creation.
 
 ## In scope
 
@@ -57,6 +58,8 @@ a final `BOUND` authorization. Local
 Studio is currently blocked by an empty validator set, but this is distinct
 from the hosted implementation evidence. Bradbury deployment is finalized and
 successfully executed at `0xCEFf63f9d66b4F60E854Ef3Eb4d2a35096037247`; the live
-lifecycle has not started, no `create_deal` hash exists, and no MATCH, callback,
-BOUND, or `is_bound` Bradbury evidence exists. Release remains blocked by
-Bradbury RPC capacity and unfinished proof/release packaging.
+lifecycle remains unstarted because the one final authorized `create_deal`
+attempt returned `0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f`
+but failed with `CANONICALIZATION_FAILED` before creating a deal. No MATCH,
+callback, BOUND, or `is_bound` Bradbury evidence exists. Release remains
+blocked by that failed write and unavailable public hosting.

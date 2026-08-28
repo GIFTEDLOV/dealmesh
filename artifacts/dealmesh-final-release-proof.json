@@ -2,6 +2,8 @@
   "schema": "dealmesh/final-release-proof/v1",
   "contributionType": "Project",
   "repository": "GIFTEDLOV/dealmesh",
+  "evidenceCheckpointHead": "b3fae4e0fc2c7c35d01fdcb3e969a78a0ee6c817",
+  "releaseHead": "c36ad6292842f150f456a104c8e31e5819fe33a4",
   "repositoryHead": "b3fae4e0fc2c7c35d01fdcb3e969a78a0ee6c817",
   "repositoryHeadScope": "evidence checkpoint at which the finalized deployment and three rejected create attempts were recorded",
   "source": {
@@ -75,27 +77,62 @@
       }
     ]
   },
+  "finalCreateAttempt": {
+    "sequence": 4,
+    "timestampUtc": null,
+    "timestampAvailability": "UNAVAILABLE",
+    "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+    "returnedHash": "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
+    "status": "ACCEPTED",
+    "executionResult": "FAILED",
+    "txExecutionHash": "0xc02451b12ae1fe4f3b769d35a73697c87a72a392cec3b36f4b97d31d8d2e46c0",
+    "txExecutionResultName": "FINISHED_WITH_ERROR",
+    "traceError": "CANONICALIZATION_FAILED",
+    "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f"
+  },
   "absenceEvidence": {
-    "latestNonce": 203,
-    "pendingNonce": 203,
+    "latestNonce": 204,
+    "pendingNonce": 204,
     "latestDealForDeployer": "",
     "lifecycleCreated": false,
-    "noCreateDealHash": true,
-    "noStateChange": true
+    "noCreateDealHash": false,
+    "noStateChange": true,
+    "preAttempt4": {
+      "latestNonce": 203,
+      "pendingNonce": 203,
+      "latestDealForDeployer": "",
+      "noStateChange": true
+    }
   },
   "lifecycle": {
-    "status": "NOT_STARTED",
+    "status": "CREATE_DEAL_FAILED",
+    "createDealHash": "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
     "assessmentHashes": [],
     "callbackHashes": [],
     "finalVerdict": "NOT_REACHED",
     "finalState": "initialized",
-    "isBound": "NOT_RUN"
+    "isBound": "NOT_RUN",
+    "createDealFailure": "ACCEPTED / FINISHED_WITH_ERROR / CANONICALIZATION_FAILED"
   },
-  "publicFrontend": "NOT_DEPLOYED",
+  "publicFrontend": {
+    "status": "NOT_DEPLOYED",
+    "provider": null,
+    "deploymentId": null,
+    "url": null,
+    "reason": "Vercel has no authenticated session; GitHub Pages is not enabled and the configured GitHub CLI token is invalid"
+  },
+  "releaseGate": "BLOCKED",
+  "verification": {
+    "finalCiUrl": null,
+    "finalCiHead": null,
+    "status": "PENDING_FINAL_PUSH_CI"
+  },
   "limitations": [
-    "No live DealMesh lifecycle has started on Bradbury.",
+    "The live DealMesh lifecycle did not start: the one final create attempt failed before deal creation.",
     "No Bradbury MATCH, finalized callback, BOUND, or is_bound evidence exists.",
     "Bradbury RPC capacity rejected all three create_deal attempts before a hash was returned.",
+    "The final create_deal transaction returned a hash but failed with CANONICALIZATION_FAILED before record creation.",
+    "No public frontend was deployed because no authenticated hosting session or enabled fallback was available.",
     "Hosted Studio implementation evidence is not an independently verified BOUND receipt package.",
     "V1 has no payments, escrow, settlement, external evidence, action execution, or legal identity."
   ]

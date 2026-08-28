@@ -65,8 +65,11 @@ The selected Bradbury endpoint and chain ID are confirmed. The DealMesh
 deployment is finalized and successfully executed at
 `0xCEFf63f9d66b4F60E854Ef3Eb4d2a35096037247` from transaction
 `0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397`.
-The live lifecycle has not started; the three create attempts were rejected
-before hash by RPC capacity, and no later Bradbury write has been made.
+The live lifecycle remains unstarted. Three earlier create attempts were
+rejected before hash by RPC capacity. The one final authorized attempt returned
+`0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f`, but was
+accepted with `FINISHED_WITH_ERROR` and trace error `CANONICALIZATION_FAILED`;
+the post-attempt nonce is `204/204` and the creator lookup remains empty.
 
 ## Testing/tooling commands
 

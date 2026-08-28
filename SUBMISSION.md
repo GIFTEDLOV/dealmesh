@@ -47,12 +47,15 @@ Repository: `GIFTEDLOV/dealmesh`.
 - Contract source: `contracts/deal_mesh.py`, 25,773 bytes,
   SHA-256 `ab86f3748afd58adee1246442ac125f098e64eb4dba3a690113555fd85cace6d`.
 
-The live DealMesh lifecycle has not started. No `create_deal` hash exists. No
-Bradbury `MATCH`, callback, `BOUND`, or `is_bound` evidence exists. Three
+The live DealMesh lifecycle remains unstarted. The three earlier
 `create_deal` requests were explicitly rejected before hash with RPC `-32005`
-capacity errors; latest and pending deployer nonce remained `203`, and the
-creator’s latest deal remained empty. Release is blocked by Bradbury capacity
-and unfinished live-proof/release packaging.
+capacity errors. The one final authorized request returned
+`0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f`, but its
+receipt is `ACCEPTED`/`FINISHED_WITH_ERROR` and its trace error is
+`CANONICALIZATION_FAILED`; no deal was created and the creator’s latest deal
+remains empty. No Bradbury `MATCH`, callback, `BOUND`, or `is_bound` evidence
+exists. Release is blocked by this failed create execution and unavailable
+public hosting.
 
 Existing hosted Studio implementations exercised multi-validator semantics and
 finalized callbacks. The preserved repository evidence does not contain enough
@@ -83,7 +86,8 @@ Reserved for the later authorized live-proof update:
 
 - final deployment/lifecycle/callback transaction hashes and explorer links;
 - final verdict, `BOUND` state, exact and wrong-digest `is_bound` results;
-- public frontend URL.
+- public frontend URL (not deployed: no authenticated Vercel session and no
+  enabled GitHub Pages fallback were available).
 
 See `artifacts/dealmesh-final-release-proof.json` and
 `docs/genlayer-bradbury-capacity-report.md` for the machine-readable evidence

@@ -1,8 +1,8 @@
 {
   "schema": "dealmesh/bradbury-release/v1",
-  "status": "BLOCKED_CREATE_DEAL_RPC_CAPACITY",
+  "status": "CREATE_DEAL_FAILED_CANONICALIZATION",
   "deploymentBroadcasted": true,
-  "createDealBroadcasted": false,
+  "createDealBroadcasted": true,
   "network": {
     "name": "GenLayer Bradbury Testnet",
     "alias": "testnet-bradbury",
@@ -41,8 +41,8 @@
   },
   "createDeal": {
     "operation": "create_deal",
-    "broadcasted": false,
-    "attemptCount": 3,
+    "broadcasted": true,
+    "attemptCount": 4,
     "attempts": [
       {
         "sequence": 1,
@@ -79,14 +79,42 @@
         "rpcCode": -32005,
         "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
         "retryAfterMs": 340
+      },
+      {
+        "sequence": 4,
+        "timestampUtc": null,
+        "timestampAvailability": "UNAVAILABLE",
+        "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "returnedHash": "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
+        "status": "ACCEPTED",
+        "executionResult": "FAILED",
+        "rpcCode": null,
+        "rpcMessage": null,
+        "retryAfterMs": null
       }
     ],
-    "absenceEvidence": {
+    "preAttempt4AbsenceEvidence": {
       "deployerLatestNonce": 203,
       "deployerPendingNonce": 203,
       "latestDealForDeployer": "",
       "noDealOrLifecycleState": true,
-      "sameHashReconciliation": "not applicable; no create_deal hash was returned"
+      "sameHashReconciliation": "precondition read before attempt 4"
+    },
+    "postAttempt4Evidence": {
+      "deployerLatestNonce": 204,
+      "deployerPendingNonce": 204,
+      "latestDealForDeployer": "",
+      "noDealOrLifecycleState": true,
+      "stateChange": "none; create_deal execution failed before record creation"
+    },
+    "sameHashReconciliation": {
+      "transactionHash": "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
+      "status": "ACCEPTED",
+      "executionResult": "FAILED",
+      "txExecutionHash": "0xc02451b12ae1fe4f3b769d35a73697c87a72a392cec3b36f4b97d31d8d2e46c0",
+      "txExecutionResultName": "FINISHED_WITH_ERROR",
+      "traceError": "CANONICALIZATION_FAILED",
+      "resultingState": "no deal; get_latest_deal_for(deployer) is empty"
     }
   },
   "writeRecordSchema": {
@@ -111,6 +139,17 @@
       "triggeredCallbackHash": null,
       "resultingState": "initialized; no deal, offer, assessment, or authorization records",
       "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397"
+    },
+    {
+      "operation": "create_deal",
+      "expectedPrecondition": "chainId 4221; initialized contract; no deal; deployer latest/pending nonce 203/203; locked secure-email fixture",
+      "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      "returnedHash": "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
+      "status": "ACCEPTED",
+      "executionResult": "FAILED",
+      "triggeredCallbackHash": null,
+      "resultingState": "no deal; execution trace CANONICALIZATION_FAILED; receipt status ACCEPTED / FINISHED_WITH_ERROR",
+      "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f"
     }
   ],
   "plannedWrites": [
@@ -192,9 +231,18 @@
     ]
   },
   "transactionHashes": [
-    "0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397"
+    "0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397",
+    "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f"
   ],
-  "lifecycleStatus": "NOT_STARTED",
+  "lifecycleStatus": "CREATE_DEAL_FAILED",
+  "publicFrontend": {
+    "status": "NOT_DEPLOYED",
+    "provider": null,
+    "deploymentId": null,
+    "url": null,
+    "reason": "Vercel has no authenticated session; GitHub Pages is not enabled and the configured GitHub CLI token is invalid"
+  },
+  "releaseGate": "BLOCKED",
   "reconciliation": {
     "persistImmediatelyAfterBroadcast": true,
     "reconcileSameHashOnly": true,
