@@ -29,10 +29,11 @@ at parent ACCEPTED, triggered transaction IDs were empty and the receiver had
 no marker; after parent FINALIZED, one child appeared, finalized successfully,
 and wrote the marker. The same test also proved a same-contract callback.
 
-The complete DealMesh lifecycle passed in two independent hosted Studio test
-modules on 2026-08-27. Both used two funded accounts, finalized writes, real
-semantic validator execution, and finalized callback/read-back checks. A
-separate local Studio preflight returned zero validators from
+Two hosted Studio test modules implement the complete DealMesh lifecycle with
+two funded accounts, finalized writes, semantic validator execution, and
+finalized callback/read-back assertions. The preserved repository evidence does
+not contain sufficient immutable receipts or hashes to independently prove a
+final `BOUND` authorization. A separate local Studio preflight returned zero validators from
 `sim_getAllValidators` and reported a dead validator process; that is a local
 infrastructure precondition failure, not a semantic or contract verdict.
 
@@ -60,8 +61,12 @@ The current official network page lists Bradbury as:
 - explorer: https://explorer-bradbury.genlayer.com
 - chain explorer: https://explorer.testnet-chain.genlayer.com
 
-The CLI confirmed the selected Bradbury endpoint and chain ID. DealMesh has
-not deployed or sent a Bradbury write.
+The selected Bradbury endpoint and chain ID are confirmed. The DealMesh
+deployment is finalized and successfully executed at
+`0xCEFf63f9d66b4F60E854Ef3Eb4d2a35096037247` from transaction
+`0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397`.
+The live lifecycle has not started; the three create attempts were rejected
+before hash by RPC capacity, and no later Bradbury write has been made.
 
 ## Testing/tooling commands
 
@@ -69,6 +74,7 @@ Contract validation:
 
     $env:GENVM_VERSION='v0.3.0-rc7'
     genvm-lint check contracts/deal_mesh.py
+    genvm-lint validate contracts/deal_mesh.py
 
 Deterministic and mocked coverage:
 
@@ -86,5 +92,6 @@ Local Studio finality and full project integration (when enabled):
     $env:DEALMESH_STUDIO='1'
     python -m pytest tests/integration -m studio -q
 
-No Bradbury deployment or write is part of this baseline. A future Bradbury
-preflight must be green before any write.
+No additional Bradbury write is part of this baseline. A future lifecycle run
+must reconcile the recorded capacity evidence and pass a fresh precondition
+gate before exactly one new write.

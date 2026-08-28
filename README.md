@@ -88,9 +88,17 @@ the action body. Plain participant text is on-chain and not private.
 The repository contains the application-specific production contract, the
 complete wallet-backed user-facing frontend workflow, deterministic direct
 tests, mocked semantic/validator tests, persistence and recovery tests, and a
-finalized-only callback authority probe. The full DealMesh lifecycle was
-proven on hosted multi-validator Studio; local Studio remains blocked by the
-validator infrastructure described below.
+finalized-only callback authority probe. Existing hosted implementations
+exercised multi-validator semantics and finalized callbacks, but the preserved
+repository evidence does not contain sufficient immutable receipts or hashes
+to independently prove a final `BOUND` authorization. Local Studio remains
+blocked by the validator infrastructure described below.
+
+Bradbury has a finalized, successfully executed deployment at
+`0xCEFf63f9d66b4F60E854Ef3Eb4d2a35096037247` from deployment transaction
+`0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397`.
+The live DealMesh lifecycle has not started: no `create_deal` hash exists, and
+there is no Bradbury `MATCH`, callback, `BOUND`, or `is_bound` evidence.
 
 Run the local checks with:
 
@@ -108,10 +116,12 @@ $env:DEALMESH_STUDIO='1'
 python -m pytest tests/integration -m studio -q
 ```
 
-The hosted Studio proof is ephemeral test-network evidence, not a public
+The hosted Studio evidence is ephemeral test-network evidence, not a public
 deployment or production economic integration. Local Studio is currently
 blocked by its empty validator registry; this does not invalidate the recorded
-hosted proof. No Bradbury write is sent until all preflight checks are green.
+hosted semantic/callback exercise. Release remains blocked by Bradbury RPC
+capacity rejections and unfinished lifecycle/release packaging. No additional
+Bradbury write is sent by CI or development scripts.
 
 ## Gate status
 
@@ -120,9 +130,15 @@ hosted proof. No Bradbury write is sent until all preflight checks are green.
 | STAGE_0_GATE | PASS |
 | IMPLEMENTATION_GATE | PASS |
 | DETERMINISTIC_CI_GATE | PASS |
-| STUDIO_INTEGRATION_GATE | PASS — hosted multi-validator Studio |
+| STUDIO_INTEGRATION_GATE | PASS — hosted multi-validator Studio implementation evidence; no independent BOUND receipt proof |
 | LOCAL_STUDIO_HEALTH | BLOCKED — zero configured local validators |
-| RELEASE_GATE | PENDING BRADBURY DEPLOYMENT AND LIVE PROOF |
+| RELEASE_GATE | BLOCKED - Bradbury RPC capacity and unfinished live proof/release packaging |
+
+The hosted test implementations exercised multi-validator semantics and
+finalized callbacks, but the preserved repository evidence does not contain
+sufficient immutable receipts or hashes to independently prove a final
+`BOUND` authorization. The finalized Bradbury deployment has no lifecycle
+state beyond initialization; release remains blocked by RPC capacity.
 
 ## Security/trust model
 

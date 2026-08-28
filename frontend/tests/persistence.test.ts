@@ -27,6 +27,7 @@ describe("transaction persistence", () => {
       args: [123n],
       createdAt: 1,
       status: "ACCEPTED",
+      sender: "0x1111111111111111111111111111111111111111",
     });
     store.put({
       id: "two",
@@ -36,6 +37,7 @@ describe("transaction persistence", () => {
       status: "UNKNOWN_SUBMISSION",
     });
     expect(store.get("one")?.args[0]).toBe(123n);
+    expect(store.get("one")?.sender).toBe("0x1111111111111111111111111111111111111111");
     expect(pendingTransactions(store).map((record) => record.id)).toEqual(["one"]);
   });
 

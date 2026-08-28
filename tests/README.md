@@ -32,4 +32,7 @@ The full DealMesh lifecycle integration test must use at least five configured
 validators, live validator processes, confirmed model/provider health, a
 responding RPC, and funded test accounts. It must remain separate from Direct
 Mode and must record parent and callback hashes without rebroadcasting. The
-local Studio environment currently fails the validator precondition.
+local Studio environment currently fails the validator precondition. Existing
+hosted implementation evidence exercises the semantic and callback path, but
+does not provide sufficient immutable receipts/hashes to claim an independently
+verified BOUND lifecycle.

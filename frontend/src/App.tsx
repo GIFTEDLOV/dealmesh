@@ -19,6 +19,11 @@ import {
   createDealMeshFrontend,
   type DealMeshFrontend,
 } from "./dealMesh.js";
+import {
+  verifyActiveBCommitted,
+  verifyCreatedDeal,
+  verifySubmittedOffer,
+} from "./dealReadback.js";
 
 type Address = `0x${string}`;
 type NetworkName = "studionet" | "testnetBradbury";
@@ -33,7 +38,11 @@ declare global {
 }
 
 const DEFAULT_ACTION = `0x${"a".repeat(64)}`;
-const DEFAULT_CONTRACT = (import.meta.env.VITE_DEALMESH_CONTRACT_ADDRESS ?? "") as string;
+const BRADBURY_CONTRACT = "0xCEFf63f9d66b4F60E854Ef3Eb4d2a35096037247";
+const DEFAULT_CONTRACT = (import.meta.env.VITE_DEALMESH_CONTRACT_ADDRESS || BRADBURY_CONTRACT) as string;
+const DEFAULT_NETWORK: NetworkName = import.meta.env.VITE_DEALMESH_NETWORK === "studionet"
+  ? "studionet"
+  : "testnetBradbury";
 
 function isAddress(value: string): value is Address {
   return /^0x[0-9a-fA-F]{40}$/.test(value);
@@ -69,13 +78,83 @@ function expectedDealState(
   };
 }
 
+export function createdDealExpectation(
+  app: DealMeshFrontend,
+  creator: string,
+  expected: Parameters<typeof verifyCreatedDeal>[1],
+): ReadBackExpectation {
+  return {
+    read: async () => {
+      const latest = await app.read("get_latest_deal_for", [creator], true);
+      if (typeof latest !== "string" || latest.length === 0) return null;
+      return parseView(await app.read("get_deal", [latest], true));
+    },
+    verify: (value) => verifyCreatedDeal(value, expected),
+  };
+}
+
+function activeBCommittedExpectation(
+  app: DealMeshFrontend,
+  dealId: string,
+  expected: Parameters<typeof verifyActiveBCommitted>[1],
+): ReadBackExpectation {
+  return {
+    read: async () => parseView(await app.read("get_deal", [dealId], true)),
+    verify: (value) => verifyActiveBCommitted(value, expected),
+  };
+}
+
+function submittedOfferExpectation(
+  app: DealMeshFrontend,
+  dealId: string,
+  expected: Parameters<typeof verifySubmittedOffer>[1],
+): ReadBackExpectation {
+  return {
+    read: async () => {
+      const offerRaw = await app.read("get_offer", [dealId], true);
+      return {
+        deal: parseView(await app.read("get_deal", [dealId], true)),
+        offer: offerRaw ? parseView(offerRaw) : null,
+      };
+    },
+    verify: (value) => verifySubmittedOffer(value, expected),
+  };
+}
+
+function assessmentFinalizedExpectation(app: DealMeshFrontend, dealId: string): ReadBackExpectation {
+  return {
+    read: async () => {
+      const deal = parseView(await app.read("get_deal", [dealId], true));
+      const assessmentRaw = await app.read("get_assessment", [dealId], true);
+      return {
+        state: deal.state,
+        offerDigest: deal.offer_digest,
+        assessment: assessmentRaw ? parseView(assessmentRaw) : null,
+      };
+    },
+    verify: (value) => {
+      const result = value as JsonRecord;
+      const assessment = result.assessment as JsonRecord | null;
+      return ["ASSESSED_MATCH_FINALIZED", "ASSESSED_NO_MATCH", "ASSESSED_INCONCLUSIVE"].includes(
+        String(result.state),
+      )
+        && assessment !== null
+        && typeof assessment.assessment_id === "string"
+        && assessment.assessment_id.length > 0
+        && assessment.deal_id === dealId
+        && assessment.offer_digest === result.offerDigest
+        && ["MATCH", "NO_MATCH", "INCONCLUSIVE"].includes(String(assessment.verdict));
+    },
+  };
+}
+
 function formValue(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): string {
   return event.target.value;
 }
 
 export default function App() {
   const storeRef = useRef<TransactionStore>(new LocalStorageTransactionStore());
-  const [network, setNetwork] = useState<NetworkName>("studionet");
+  const [network, setNetwork] = useState<NetworkName>(DEFAULT_NETWORK);
   const [contractAddress, setContractAddress] = useState(DEFAULT_CONTRACT);
   const [account, setAccount] = useState<Address | "">("");
   const [app, setApp] = useState<DealMeshFrontend | null>(null);
@@ -94,24 +173,24 @@ export default function App() {
   const [busy, setBusy] = useState(false);
 
   const [createForm, setCreateForm] = useState({
-    partyB: "",
+    partyB: "0x6311de989ab01ae4da77d36cc45d495fbcd4b7a8",
     priceUnit: "USD",
     maxPrice: "1000",
     latestDeadline: "4102444800",
-    requirements: "use the secure channel; no external evidence",
+    requirements: "use the exact secure-email channel",
     actionDigest: DEFAULT_ACTION,
   });
   const [acceptForm, setAcceptForm] = useState({
     priceUnit: "USD",
     minPrice: "100",
     earliestDeadline: "1",
-    requirements: "accept the exact report through the secure channel",
+    requirements: "use the exact secure-email channel",
   });
   const [offerForm, setOfferForm] = useState({
     price: "500",
     deadline: "2000000000",
     actionDigest: DEFAULT_ACTION,
-    terms: '[{"key":"channel","value":"secure"}]',
+    terms: '[{"key":"channel","value":"secure-email"}]',
   });
 
   const chain = useMemo(() => {
@@ -138,7 +217,32 @@ export default function App() {
   const reconcileRecord = useCallback(async (frontend: DealMeshFrontend, record: PersistedTransaction) => {
     if (!record.hash) return;
     const args = record.args;
-    if (record.method === "assess_offer") {
+    if (record.method === "create_deal") {
+      const sender = record.sender;
+      if (!sender) {
+        throw new LifecycleError(
+          "READBACK_MISMATCH",
+          "CREATE recovery lacks the authenticated Party A sender context; do not treat Party B as a deal ID.",
+          "state-mismatch",
+        );
+      }
+      const partyB = String(args[0]);
+      const priceUnit = String(args[1]);
+      const maximum = String(args[2]);
+      const latestDeadline = String(args[3]);
+      const requirements = String(args[4]);
+      const actionDigest = String(args[5]);
+      await finalizeAndReadBack(
+        frontend.readClient,
+        storeRef.current,
+        record,
+        createdDealExpectation(
+          frontend,
+          sender,
+          { partyA: sender, partyB, priceUnit, maxPrice: maximum, latestDeadline, requirements, actionDigest },
+        ),
+      );
+    } else if (record.method === "assess_offer") {
       const id = String(args[0]);
       const parent = expectedDealState(frontend, id, [
         "ASSESSED_MATCH_PENDING_FINALITY",
@@ -148,14 +252,7 @@ export default function App() {
         "ASSESSED_NO_MATCH",
         "ASSESSED_INCONCLUSIVE",
       ]);
-      const callback: ReadBackExpectation = {
-        read: async () => ({ state: parseView(await frontend.read("get_deal", [id], true)).state }),
-        verify: (value) => [
-          "ASSESSED_MATCH_FINALIZED",
-          "ASSESSED_NO_MATCH",
-          "ASSESSED_INCONCLUSIVE",
-        ].includes(String((value as JsonRecord).state)),
-      };
+      const callback = assessmentFinalizedExpectation(frontend, id);
       await finalizeWithTriggeredReadBack(frontend.readClient, storeRef.current, record, parent, callback);
     } else if (record.method === "bind_match") {
       const id = String(args[0]);
@@ -174,15 +271,35 @@ export default function App() {
       await finalizeWithTriggeredReadBack(frontend.readClient, storeRef.current, record, parent, callback);
     } else {
       const id = String(args[0]);
-      await finalizeAndReadBack(frontend.readClient, storeRef.current, record, expectedDealState(
-        frontend,
-        id,
-        record.method === "accept_participation"
-          ? ["ACTIVE_B_COMMITTED"]
-          : record.method === "submit_offer"
-            ? ["OFFER_SUBMITTED"]
-            : ["CREATED_A_COMMITTED"],
-      ));
+      if (record.method === "accept_participation") {
+        await finalizeAndReadBack(
+          frontend.readClient,
+          storeRef.current,
+          record,
+          activeBCommittedExpectation(frontend, id, {
+            dealId: id,
+            partyB: String(record.sender ?? ""),
+            priceUnit: String(args[1]),
+            minPrice: String(args[2]),
+            earliestDeadline: String(args[3]),
+            requirements: String(args[4]),
+          }),
+        );
+      } else {
+        await finalizeAndReadBack(
+          frontend.readClient,
+          storeRef.current,
+          record,
+          submittedOfferExpectation(frontend, id, {
+            dealId: id,
+            price: String(args[1]),
+            deadline: String(args[2]),
+            actionDigest: String(args[3]),
+            terms: String(args[4]),
+            submittedBy: record.sender,
+          }),
+        );
+      }
     }
   }, []);
 
@@ -267,7 +384,7 @@ export default function App() {
           );
         }
       }
-      const submitted = await app.submit(method, args, parentReadBack);
+      const submitted = await app.submit(method, args, parentReadBack, account || undefined);
       setProgress({ method, status: "BROADCAST_ONCE / HASH_PERSISTED", hash: submitted.hash });
       if (parentReadBack && callbackReadBack) {
         await app.finalizeWithCallback(submitted, parentReadBack, callbackReadBack);
@@ -289,6 +406,15 @@ export default function App() {
 
   async function createDeal(): Promise<void> {
     if (!app || !account) return;
+    const expected = createdDealExpectation(app, account, {
+      partyA: account,
+      partyB: createForm.partyB,
+      priceUnit: createForm.priceUnit,
+      maxPrice: createForm.maxPrice,
+      latestDeadline: createForm.latestDeadline,
+      requirements: createForm.requirements,
+      actionDigest: createForm.actionDigest,
+    });
     const completed = await execute("create_deal", [
       createForm.partyB,
       createForm.priceUnit,
@@ -298,8 +424,8 @@ export default function App() {
       createForm.actionDigest,
     ], {
       read: async () => app.read("get_latest_deal_for", [account], true),
-      verify: () => true,
-    });
+      verify: (value) => typeof value === "string",
+    }, expected);
     if (!completed) return;
     const latest = await app.read("get_latest_deal_for", [account], true);
     if (typeof latest !== "string" || !latest) {
@@ -312,35 +438,40 @@ export default function App() {
 
   async function acceptParticipation(): Promise<void> {
     if (!app || !dealId) return;
+    const expected = activeBCommittedExpectation(app, dealId, {
+      dealId,
+      partyB: account || "",
+      priceUnit: acceptForm.priceUnit,
+      minPrice: acceptForm.minPrice,
+      earliestDeadline: acceptForm.earliestDeadline,
+      requirements: acceptForm.requirements,
+    });
     await execute("accept_participation", [
       dealId,
       acceptForm.priceUnit,
       BigInt(acceptForm.minPrice),
       BigInt(acceptForm.earliestDeadline),
       acceptForm.requirements,
-    ], expectedDealState(app, dealId, ["CREATED_A_COMMITTED"]), expectedDealState(app, dealId, ["ACTIVE_B_COMMITTED"]));
+    ], expectedDealState(app, dealId, ["CREATED_A_COMMITTED"]), expected);
   }
 
   async function submitOffer(): Promise<void> {
     if (!app || !dealId) return;
+    const expected = submittedOfferExpectation(app, dealId, {
+      dealId,
+      price: offerForm.price,
+      deadline: offerForm.deadline,
+      actionDigest: offerForm.actionDigest,
+      terms: offerForm.terms,
+      submittedBy: account || undefined,
+    });
     await execute("submit_offer", [
       dealId,
       BigInt(offerForm.price),
       BigInt(offerForm.deadline),
       offerForm.actionDigest,
       offerForm.terms,
-    ], expectedDealState(app, dealId, ["ACTIVE_B_COMMITTED"]), {
-      read: async () => ({
-        state: parseView(await app.read("get_deal", [dealId], true)).state,
-        offer: parseView(await app.read("get_offer", [dealId], true)),
-      }),
-      verify: (value) => {
-        const result = value as JsonRecord;
-        const submittedOffer = result.offer as JsonRecord;
-        return result.state === "OFFER_SUBMITTED"
-          && submittedOffer.action_digest === offerForm.actionDigest;
-      },
-    });
+    ], expectedDealState(app, dealId, ["ACTIVE_B_COMMITTED"]), expected);
   }
 
   async function assessOffer(): Promise<void> {
@@ -354,12 +485,7 @@ export default function App() {
       "ASSESSED_NO_MATCH",
       "ASSESSED_INCONCLUSIVE",
     ]);
-    const callback: ReadBackExpectation = {
-      read: async () => ({ state: parseView(await app.read("get_deal", [dealId], true)).state }),
-      verify: (value) => ["ASSESSED_MATCH_FINALIZED", "ASSESSED_NO_MATCH", "ASSESSED_INCONCLUSIVE"].includes(
-        String((value as JsonRecord).state),
-      ),
-    };
+    const callback = assessmentFinalizedExpectation(app, dealId);
     await execute("assess_offer", [dealId], precondition, pending, callback);
   }
 

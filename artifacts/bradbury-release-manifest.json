@@ -94,7 +94,7 @@
     "expectedPrecondition": "string",
     "sender": "0x... or contract",
     "returnedHash": "0x...",
-    "status": "SUBMITTED|ACCEPTED|FINALIZED|FAILED|REJECTED_NO_HASH|UNKNOWN",
+    "status": "SUBMITTED|ACCEPTED|FINALIZED|FAILED|REJECTED_NO_HASH|UNKNOWN_SUBMISSION",
     "executionResult": "FINISHED_WITH_RETURN|FAILED|UNKNOWN",
     "triggeredCallbackHash": "0x... or null",
     "resultingState": "string",

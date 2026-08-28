@@ -27,6 +27,50 @@ describe("finalized lifecycle", () => {
     expect(store.get(submitted.id)?.status).toBe("SUBMITTED");
   });
 
+  it("classifies an explicit -32005 capacity rejection before hash without retrying", async () => {
+    const store = new MemoryTransactionStore();
+    const writeContract = vi.fn(async () => {
+      const error = new Error("transaction gas rate limit exceeded: node is at capacity") as Error & { code: number };
+      error.code = -32005;
+      throw error;
+    });
+    await expect(submitWriteOnce(
+      { writeContract } as never,
+      store,
+      { address: ADDRESS, method: "create_deal", args: [], now: 11 },
+    )).rejects.toMatchObject({ code: "TX_REJECTED_BEFORE_HASH", category: "wallet-rpc" });
+    expect(writeContract).toHaveBeenCalledTimes(1);
+    const rejection = store.list()[0];
+    expect(rejection?.status).toBe("REJECTED_NO_HASH");
+    expect(rejection?.hash).toBeUndefined();
+  });
+
+  it("keeps an ambiguous no-hash exception as UNKNOWN_SUBMISSION", async () => {
+    const store = new MemoryTransactionStore();
+    const writeContract = vi.fn(async () => {
+      throw new Error("connection closed before the wallet returned a result");
+    });
+    await expect(submitWriteOnce(
+      { writeContract } as never,
+      store,
+      { address: ADDRESS, method: "create_deal", args: [], now: 12 },
+    )).rejects.toMatchObject({ code: "TX_SUBMISSION_UNKNOWN" });
+    expect(store.list()[0]?.status).toBe("UNKNOWN_SUBMISSION");
+    expect(writeContract).toHaveBeenCalledTimes(1);
+  });
+
+  it("treats a successful SDK response without a hash as ambiguous", async () => {
+    const store = new MemoryTransactionStore();
+    const writeContract = vi.fn(async () => undefined);
+    await expect(submitWriteOnce(
+      { writeContract } as never,
+      store,
+      { address: ADDRESS, method: "create_deal", args: [], now: 13 },
+    )).rejects.toMatchObject({ code: "TX_HASH_NOT_RETURNED" });
+    expect(store.list()[0]?.status).toBe("UNKNOWN_SUBMISSION");
+    expect(writeContract).toHaveBeenCalledTimes(1);
+  });
+
   it("requires successful finalized execution and exact read-back", async () => {
     const store = new MemoryTransactionStore();
     const record = {

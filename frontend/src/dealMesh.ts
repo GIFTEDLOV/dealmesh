@@ -41,6 +41,7 @@ export interface DealMeshFrontend {
     method: string,
     args: readonly CalldataEncodable[],
     expected?: ReadBackExpectation,
+    sender?: string,
   ): Promise<SubmittedWrite>;
   finalize(
     submitted: SubmittedWrite,
@@ -74,12 +75,13 @@ export function createDealMeshFrontend(input: {
     readClient,
     writeClient,
     store,
-    async submit(method, args, expected) {
+    async submit(method, args, expected, sender) {
       return submitWriteOnce(writeClient, store, {
         address,
         method,
         args,
         expectedReadBack: expected?.expected,
+        sender,
       });
     },
     async finalize(submitted, expected) {

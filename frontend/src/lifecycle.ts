@@ -17,6 +17,7 @@ export class LifecycleError extends Error {
   constructor(
     readonly code:
       | "TX_HASH_NOT_RETURNED"
+      | "TX_REJECTED_BEFORE_HASH"
       | "TX_SUBMISSION_UNKNOWN"
       | "FINALITY_NOT_REACHED"
       | "CONSENSUS_FAILURE"
@@ -67,6 +68,7 @@ export async function submitWriteOnce(
     readonly method: string;
     readonly args: readonly CalldataEncodable[];
     readonly expectedReadBack?: unknown;
+    readonly sender?: string;
     readonly now?: number;
   },
 ): Promise<SubmittedWrite> {
@@ -81,6 +83,23 @@ export async function submitWriteOnce(
       value: 0n,
     });
   } catch (error) {
+    if (isExplicitPreHashCapacityRejection(error)) {
+      store.put({
+        id,
+        method: input.method,
+        args: input.args,
+        createdAt,
+        status: "REJECTED_NO_HASH",
+        expectedReadBack: input.expectedReadBack,
+        sender: input.sender,
+        error: errorMessage(error),
+      });
+      throw new LifecycleError(
+        "TX_REJECTED_BEFORE_HASH",
+        "The RPC explicitly rejected this write before acceptance; no transaction hash exists and automatic retry is disabled.",
+        "wallet-rpc",
+      );
+    }
     store.put({
       id,
       method: input.method,
@@ -88,7 +107,8 @@ export async function submitWriteOnce(
       createdAt,
       status: "UNKNOWN_SUBMISSION",
       expectedReadBack: input.expectedReadBack,
-      error: error instanceof Error ? error.message : String(error),
+      sender: input.sender,
+      error: errorMessage(error),
     });
     throw new LifecycleError(
       "TX_SUBMISSION_UNKNOWN",
@@ -104,6 +124,7 @@ export async function submitWriteOnce(
       createdAt,
       status: "UNKNOWN_SUBMISSION",
       expectedReadBack: input.expectedReadBack,
+      sender: input.sender,
     });
     throw new LifecycleError("TX_HASH_NOT_RETURNED", "The wallet returned no transaction hash.");
   }
@@ -116,8 +137,34 @@ export async function submitWriteOnce(
     createdAt,
     status: "SUBMITTED",
     expectedReadBack: input.expectedReadBack,
+    sender: input.sender,
   });
   return { id, hash };
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function errorField(error: unknown, key: string): unknown {
+  if (error !== null && typeof error === "object") {
+    return (error as Record<string, unknown>)[key];
+  }
+  return undefined;
+}
+
+function isExplicitPreHashCapacityRejection(error: unknown): boolean {
+  const directCode = errorField(error, "code");
+  const data = errorField(error, "data");
+  const nestedCode = errorField(data, "code");
+  const message = [
+    errorMessage(error),
+    errorField(error, "shortMessage"),
+    errorField(data, "message"),
+  ].filter((item): item is string => typeof item === "string").join(" ").toLowerCase();
+  const hasCode = directCode === -32005 || directCode === "-32005"
+    || nestedCode === -32005 || nestedCode === "-32005";
+  return hasCode && message.includes("capacity") && message.includes("rate limit");
 }
 
 export async function finalizeAndReadBack(

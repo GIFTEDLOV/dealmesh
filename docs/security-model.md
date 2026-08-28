@@ -18,6 +18,9 @@
 - The frontend never treats an accepted or cached write as usable: it requires
   finality, successful execution, and exact read-back, and never rebroadcasts
   after submission uncertainty.
+- An explicit pre-hash RPC capacity rejection is a wallet/RPC failure recorded
+  as `REJECTED_NO_HASH`; an ambiguous exception is `UNKNOWN_SUBMISSION` and is
+  never retried automatically.
 
 ## PREVENT / DETECT / FAIL-CLOSED matrix
 
@@ -36,6 +39,7 @@
 | attacker calls finalizer | finalizer requires contract sender and all exact fields | callback sender and binding checks | revert; pending state remains |
 | wrong party binds | require exact A/B and non-submitter sender | stored submitter comparison | revert; no binding |
 | timeout, refresh, or duplicate write | persist known hash immediately; recovery is hash-only | lifecycle store and tests | unknown submission remains manual; no rebroadcast |
+| explicit pre-hash RPC capacity rejection | require an explicit -32005 capacity error before classifying | persisted rejection status and error category | no hash, no reconciliation, no automatic retry |
 | stale or inconsistent RPC read | finalized read variant and exact object comparison | read-back mismatch error | UI blocks progress |
 | unavailable external evidence | V1 accepts no external evidence | schema/API boundary review | no semantic call; no authorization |
 | replay of old deal/offer state | nonce-bound IDs and exact current-state checks | state/digest comparison | reject superseded or wrong pair |

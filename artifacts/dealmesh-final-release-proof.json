@@ -1,0 +1,102 @@
+{
+  "schema": "dealmesh/final-release-proof/v1",
+  "contributionType": "Project",
+  "repository": "GIFTEDLOV/dealmesh",
+  "repositoryHead": "b3fae4e0fc2c7c35d01fdcb3e969a78a0ee6c817",
+  "repositoryHeadScope": "evidence checkpoint at which the finalized deployment and three rejected create attempts were recorded",
+  "source": {
+    "path": "contracts/deal_mesh.py",
+    "bytes": 25773,
+    "sha256": "ab86f3748afd58adee1246442ac125f098e64eb4dba3a690113555fd85cace6d"
+  },
+  "runtime": {
+    "runner": "1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
+    "genvm": "v0.3.0-rc7",
+    "genlayerCli": "0.39.1",
+    "genlayerJs": "1.1.8"
+  },
+  "network": {
+    "name": "GenLayer Bradbury Testnet",
+    "rpc": "https://rpc-bradbury.genlayer.com",
+    "chainId": 4221,
+    "explorer": "https://explorer-bradbury.genlayer.com/"
+  },
+  "deployment": {
+    "address": "0xCEFf63f9d66b4F60E854Ef3Eb4d2a35096037247",
+    "transactionHash": "0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397",
+    "status": "FINALIZED",
+    "execution": "FINISHED_WITH_RETURN",
+    "result": "AGREE",
+    "txExecutionHash": "0x9838e3f9e45de87a780be6116ad8aad5933228cd89fc5b82e1af75d15e401fc9",
+    "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397",
+    "initialState": "initialized",
+    "initialStateReadBack": {
+      "deployerLatestDeal": "",
+      "partyBLatestDeal": "",
+      "emptyDeal": "",
+      "emptyOffer": "",
+      "emptyAssessment": "",
+      "emptyAuthorization": false
+    }
+  },
+  "capacityRejections": {
+    "operation": "create_deal",
+    "attemptCount": 3,
+    "attempts": [
+      {
+        "sequence": 1,
+        "timestampUtc": null,
+        "timestampAvailability": "UNAVAILABLE",
+        "rpcCode": -32005,
+        "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
+        "retryAfterMs": 3,
+        "returnedHash": null,
+        "status": "REJECTED_NO_HASH"
+      },
+      {
+        "sequence": 2,
+        "timestampUtc": null,
+        "timestampAvailability": "UNAVAILABLE",
+        "rpcCode": -32005,
+        "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
+        "retryAfterMs": 794,
+        "returnedHash": null,
+        "status": "REJECTED_NO_HASH"
+      },
+      {
+        "sequence": 3,
+        "timestampUtc": null,
+        "timestampAvailability": "UNAVAILABLE",
+        "rpcCode": -32005,
+        "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
+        "retryAfterMs": 340,
+        "returnedHash": null,
+        "status": "REJECTED_NO_HASH"
+      }
+    ]
+  },
+  "absenceEvidence": {
+    "latestNonce": 203,
+    "pendingNonce": 203,
+    "latestDealForDeployer": "",
+    "lifecycleCreated": false,
+    "noCreateDealHash": true,
+    "noStateChange": true
+  },
+  "lifecycle": {
+    "status": "NOT_STARTED",
+    "assessmentHashes": [],
+    "callbackHashes": [],
+    "finalVerdict": "NOT_REACHED",
+    "finalState": "initialized",
+    "isBound": "NOT_RUN"
+  },
+  "publicFrontend": "NOT_DEPLOYED",
+  "limitations": [
+    "No live DealMesh lifecycle has started on Bradbury.",
+    "No Bradbury MATCH, finalized callback, BOUND, or is_bound evidence exists.",
+    "Bradbury RPC capacity rejected all three create_deal attempts before a hash was returned.",
+    "Hosted Studio implementation evidence is not an independently verified BOUND receipt package.",
+    "V1 has no payments, escrow, settlement, external evidence, action execution, or legal identity."
+  ]
+}

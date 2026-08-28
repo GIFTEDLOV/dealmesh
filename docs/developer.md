@@ -41,7 +41,8 @@ the same preconditions are verified:
 The local Studio preflight is currently blocked by an empty validator registry
 and a dead validator process. Do not reset Studio volumes or validator state to
 work around this condition. Do not send Bradbury writes from tests or
-development scripts.
+development scripts; the repository contains finalized deployment evidence but
+no live lifecycle evidence.
 
 Do not run Bradbury writes from tests or development scripts.
 

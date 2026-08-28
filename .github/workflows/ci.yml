@@ -11,6 +11,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Prove exact checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -25,13 +29,32 @@ jobs:
       - name: Lint and validate contract
         env:
           GENVM_VERSION: v0.3.0-rc7
-        run: genvm-lint check contracts/deal_mesh.py
+        run: |
+          genvm-lint check contracts/deal_mesh.py
+          genvm-lint validate contracts/deal_mesh.py
+
+      - name: Verify source hash and release evidence
+        run: |
+          python tools/source_hash.py --check
+          python tools/verify_release_evidence.py
+
+      - name: Secret scan
+        run: python tools/secret_scan.py
+
+      - name: Verify diff and generated state
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all)"
 
   frontend:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Prove exact checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -51,3 +74,9 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+      - name: Verify generated state is clean
+        working-directory: frontend
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all)"

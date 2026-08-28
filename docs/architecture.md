@@ -135,10 +135,14 @@ DealMesh itself does not perform money movement or downstream execution.
 The GenLayerJS frontend creates separate read and wallet-backed write clients.
 For each write it calls `writeContract` once and persists the returned hash
 before polling. Recovery enumerates persisted hashes and never reconstructs or
-rebroadcasts calldata. It waits for `TransactionStatus.FINALIZED`, requires
+rebroadcasts calldata. For `create_deal`, the persisted authenticated Party A
+sender is used with `get_latest_deal_for(Party A)`; Party B's first calldata
+argument is never treated as a deal ID. It waits for `TransactionStatus.FINALIZED`, requires
 `ExecutionResult.FINISHED_WITH_RETURN`, and then compares the exact read-back
 object. Triggered finality callbacks are discovered from the finalized parent,
 finalized independently, and read back before the UI treats the state as
-usable.
+usable. An explicit pre-hash RPC `-32005` capacity rejection is persisted as
+`REJECTED_NO_HASH`; any ambiguous no-hash exception remains
+`UNKNOWN_SUBMISSION` and requires manual reconciliation.
 
 `ACCEPTED` is a progress status, not an authorization threshold.

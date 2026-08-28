@@ -7,6 +7,7 @@ export type PersistedStatus =
   | "ACCEPTED"
   | "FINALIZED"
   | "FAILED"
+  | "REJECTED_NO_HASH"
   | "UNKNOWN_SUBMISSION";
 
 export interface PersistedTransaction {
@@ -19,6 +20,8 @@ export interface PersistedTransaction {
   readonly executionResultName?: string;
   readonly expectedReadBack?: unknown;
   readonly error?: string;
+  /** Authenticated wallet address that submitted the write, when known. */
+  readonly sender?: string;
   /** Hash of the contract-owned finalized callback discovered for this parent. */
   readonly triggeredHash?: string;
   readonly parentId?: string;
