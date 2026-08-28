@@ -1,7 +1,7 @@
 {
   "schema": "dealmesh/bradbury-release/v1",
-  "status": "PREPARED_READ_ONLY",
-  "broadcasted": false,
+  "status": "BLOCKED_CREATE_DEAL_RPC_CAPACITY",
+  "broadcasted": true,
   "network": {
     "name": "GenLayer Bradbury Testnet",
     "alias": "testnet-bradbury",
@@ -20,18 +20,72 @@
     "deployer": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
     "partyB": "0x6311de989ab01ae4da77d36cc45d495fbcd4b7a8"
   },
+  "deployment": {
+    "transactionHash": "0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397",
+    "contractAddress": "0xCEFf63f9d66b4F60E854Ef3Eb4d2a35096037247",
+    "status": "FINALIZED",
+    "executionResult": "FINISHED_WITH_RETURN",
+    "resultName": "AGREE",
+    "txExecutionHash": "0x9838e3f9e45de87a780be6116ad8aad5933228cd89fc5b82e1af75d15e401fc9",
+    "resultingState": "initialized; no deal, offer, assessment, or authorization records",
+    "initialStateReadBack": {
+      "deployerLatestDeal": "",
+      "partyBLatestDeal": "",
+      "emptyDeal": "",
+      "emptyOffer": "",
+      "emptyAssessment": "",
+      "emptyAuthorization": false
+    },
+    "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397"
+  },
+  "blockedOperation": {
+    "operation": "create_deal",
+    "expectedPrecondition": "finalized deployment read-back succeeded; active sender is deployer",
+    "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+    "returnedHash": null,
+    "status": "REJECTED_NO_HASH",
+    "executionResult": "NOT_BROADCAST",
+    "triggeredCallbackHash": null,
+    "resultingState": "no create_deal transaction accepted; deployment remains the only DealMesh Bradbury write",
+    "explorerUrl": null,
+    "rpcCode": -32005,
+    "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
+    "sameHashReconciliation": "not applicable; no hash returned and deployer latest/pending nonce remained 203",
+    "attemptCount": 2,
+    "secondAttempt": {
+      "operation": "create_deal",
+      "returnedHash": null,
+      "status": "REJECTED_NO_HASH",
+      "executionResult": "NOT_BROADCAST",
+      "rpcCode": -32005,
+      "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
+      "retryAfterMs": 794
+    }
+  },
   "writeRecordSchema": {
     "operation": "string",
     "expectedPrecondition": "string",
     "sender": "0x... or contract",
     "returnedHash": "0x...",
-    "status": "SUBMITTED|ACCEPTED|FINALIZED|FAILED|UNKNOWN",
+    "status": "SUBMITTED|ACCEPTED|FINALIZED|FAILED|REJECTED_NO_HASH|UNKNOWN",
     "executionResult": "FINISHED_WITH_RETURN|FAILED|UNKNOWN",
     "triggeredCallbackHash": "0x... or null",
     "resultingState": "string",
     "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/{hash}"
   },
-  "writes": [],
+  "writes": [
+    {
+      "operation": "deploy",
+      "expectedPrecondition": "chainId 4221; clean worktree; source digest matches contract.sourceSha256; deployer balance preflight is sufficient",
+      "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      "returnedHash": "0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397",
+      "status": "FINALIZED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "triggeredCallbackHash": null,
+      "resultingState": "initialized; no deal, offer, assessment, or authorization records",
+      "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397"
+    }
+  ],
   "plannedWrites": [
     {
       "operation": "deploy",
@@ -110,7 +164,9 @@
       }
     ]
   },
-  "transactionHashes": [],
+  "transactionHashes": [
+    "0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397"
+  ],
   "reconciliation": {
     "persistImmediatelyAfterBroadcast": true,
     "reconcileSameHashOnly": true,
