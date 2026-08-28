@@ -24,7 +24,17 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
 
       - name: Run direct and mocked tests
-        run: python -m pytest tests/direct tests/mocked -q
+        shell: bash
+        run: |
+          evidence_backup="$(mktemp -d)"
+          cp artifacts/bradbury-release-manifest.json "$evidence_backup/"
+          cp artifacts/dealmesh-final-release-proof.json "$evidence_backup/"
+          restore_evidence() {
+            cp "$evidence_backup/bradbury-release-manifest.json" artifacts/
+            cp "$evidence_backup/dealmesh-final-release-proof.json" artifacts/
+          }
+          trap restore_evidence EXIT
+          python -m pytest tests/direct tests/mocked -q
 
       - name: Lint and validate contract
         env:
