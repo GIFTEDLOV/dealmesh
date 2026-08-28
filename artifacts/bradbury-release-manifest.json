@@ -1,7 +1,8 @@
 {
   "schema": "dealmesh/bradbury-release/v1",
   "status": "BLOCKED_CREATE_DEAL_RPC_CAPACITY",
-  "broadcasted": true,
+  "deploymentBroadcasted": true,
+  "createDealBroadcasted": false,
   "network": {
     "name": "GenLayer Bradbury Testnet",
     "alias": "testnet-bradbury",
@@ -38,28 +39,54 @@
     },
     "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397"
   },
-  "blockedOperation": {
+  "createDeal": {
     "operation": "create_deal",
-    "expectedPrecondition": "finalized deployment read-back succeeded; active sender is deployer",
-    "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
-    "returnedHash": null,
-    "status": "REJECTED_NO_HASH",
-    "executionResult": "NOT_BROADCAST",
-    "triggeredCallbackHash": null,
-    "resultingState": "no create_deal transaction accepted; deployment remains the only DealMesh Bradbury write",
-    "explorerUrl": null,
-    "rpcCode": -32005,
-    "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
-    "sameHashReconciliation": "not applicable; no hash returned and deployer latest/pending nonce remained 203",
-    "attemptCount": 2,
-    "secondAttempt": {
-      "operation": "create_deal",
-      "returnedHash": null,
-      "status": "REJECTED_NO_HASH",
-      "executionResult": "NOT_BROADCAST",
-      "rpcCode": -32005,
-      "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
-      "retryAfterMs": 794
+    "broadcasted": false,
+    "attemptCount": 3,
+    "attempts": [
+      {
+        "sequence": 1,
+        "timestampUtc": null,
+        "timestampAvailability": "UNAVAILABLE",
+        "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "returnedHash": null,
+        "status": "REJECTED_NO_HASH",
+        "executionResult": "NOT_BROADCAST",
+        "rpcCode": -32005,
+        "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
+        "retryAfterMs": 3
+      },
+      {
+        "sequence": 2,
+        "timestampUtc": null,
+        "timestampAvailability": "UNAVAILABLE",
+        "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "returnedHash": null,
+        "status": "REJECTED_NO_HASH",
+        "executionResult": "NOT_BROADCAST",
+        "rpcCode": -32005,
+        "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
+        "retryAfterMs": 794
+      },
+      {
+        "sequence": 3,
+        "timestampUtc": null,
+        "timestampAvailability": "UNAVAILABLE",
+        "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "returnedHash": null,
+        "status": "REJECTED_NO_HASH",
+        "executionResult": "NOT_BROADCAST",
+        "rpcCode": -32005,
+        "rpcMessage": "transaction gas rate limit exceeded: node is at capacity",
+        "retryAfterMs": 340
+      }
+    ],
+    "absenceEvidence": {
+      "deployerLatestNonce": 203,
+      "deployerPendingNonce": 203,
+      "latestDealForDeployer": "",
+      "noDealOrLifecycleState": true,
+      "sameHashReconciliation": "not applicable; no create_deal hash was returned"
     }
   },
   "writeRecordSchema": {
@@ -167,6 +194,7 @@
   "transactionHashes": [
     "0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397"
   ],
+  "lifecycleStatus": "NOT_STARTED",
   "reconciliation": {
     "persistImmediatelyAfterBroadcast": true,
     "reconcileSameHashOnly": true,
