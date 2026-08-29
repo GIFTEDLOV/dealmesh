@@ -1,7 +1,8 @@
 # Bradbury capacity escalation report
 
-Status: release evidence report; exactly one final create write was attempted
-after the recorded capacity preconditions. No fifth write was attempted.
+Status: release evidence report; attempt 4 failed from incorrect calldata
+typing, and one corrected create write was then broadcast. No sixth write or
+later lifecycle write was attempted.
 
 ## Network and deployment
 
@@ -19,8 +20,8 @@ after the recorded capacity preconditions. No fifth write was attempted.
 The first three create attempts were rejected before transaction acceptance.
 No returned transaction hash exists for those three attempts. Attempt
 timestamps are unavailable in the preserved logs and manifest; no timestamps
-are inferred here. The one final authorized attempt returned a hash and is
-recorded separately below.
+are inferred here. Attempts 4 and 5 returned hashes and are recorded
+separately below.
 
 | Attempt | Timestamp UTC | RPC code | Exact message | retryAfterMs | Returned hash |
 | --- | --- | ---: | --- | ---: | --- |
@@ -28,15 +29,19 @@ recorded separately below.
 | 2 | unavailable | -32005 | `transaction gas rate limit exceeded: node is at capacity` | 794 | none |
 | 3 | unavailable | -32005 | `transaction gas rate limit exceeded: node is at capacity` | 340 | none |
 
-| 4 | unavailable | — | accepted; execution trace returned `CANONICALIZATION_FAILED` | — | `0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f` |
+| 4 | unavailable | — | `FINALIZED` / `FINISHED_WITH_ERROR`; `action_digest` was encoded as an integer instead of a string | — | `0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f` |
+| 5 | unavailable | — | `ACCEPTED` / `FINISHED_WITH_RETURN` / `AGREE`; finality pending after bounded reconciliation | — | `0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0` |
 
 Before attempt 4, read-only absence evidence recorded latest and pending
 deployer nonce as `203/203`, with `get_latest_deal_for(deployer)` empty. After
-reconciling the returned hash, latest and pending nonce were `204/204`, the
-creator lookup remained empty, and no deal, offer, assessment, callback, or
-lifecycle state was created. The exact receipt remained `ACCEPTED` with
-`FINISHED_WITH_ERROR`; the same hash was not replaced or rebroadcast. The
-deployment and initialized contract remain unchanged.
+that failed hash finalized, the preserved evidence recorded `204/204`. Before
+corrected attempt 5, the fresh absence read was `205/205` with an empty creator
+lookup. After its single broadcast, nonce was `206/206` and the creator lookup
+returned deal `0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a`.
+The exact parent remains `ACCEPTED` with `FINISHED_WITH_RETURN`; the read view
+shows `CREATED_A_COMMITTED`, but finality has not been observed, so no accept,
+offer, assessment, callback, bind, or downstream authorization was sent.
+The corrected hash was not replaced or rebroadcast.
 
 ## Tooling context
 

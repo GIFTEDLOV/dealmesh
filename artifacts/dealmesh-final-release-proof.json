@@ -83,36 +83,78 @@
     "timestampAvailability": "UNAVAILABLE",
     "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
     "returnedHash": "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
-    "status": "ACCEPTED",
-    "executionResult": "FAILED",
+    "status": "FINALIZED",
+    "executionResult": "FINISHED_WITH_ERROR",
     "txExecutionHash": "0xc02451b12ae1fe4f3b769d35a73697c87a72a392cec3b36f4b97d31d8d2e46c0",
     "txExecutionResultName": "FINISHED_WITH_ERROR",
     "traceError": "CANONICALIZATION_FAILED",
+    "rootCause": "action_digest was encoded as an integer instead of the required literal string",
+    "actionDigestEncoding": "integer",
+    "actionDigestDecodedValue": "77194726158210796949047323339125271902179989777093709359638389338608753093290",
+    "actionDigestRequiredEncoding": "literal string 0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f"
   },
+  "correctedCreateAttempt": {
+    "sequence": 5,
+    "timestampUtc": null,
+    "timestampAvailability": "UNAVAILABLE",
+    "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+    "returnedHash": "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
+    "status": "ACCEPTED",
+    "executionResult": "FINISHED_WITH_RETURN",
+    "result": "AGREE",
+    "txExecutionHash": "0xee42e4d976126801e92336367b094560ecff5cc2979f4e43f7011f1089691db0",
+    "finality": "PENDING",
+    "actionDigestEncoding": "literal string",
+    "dealIdObservedAtAccepted": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
+    "stateObservedAtAccepted": "CREATED_A_COMMITTED",
+    "offerObservedAtAccepted": "",
+    "assessmentObservedAtAccepted": "",
+    "bindingObservedAtAccepted": false,
+    "readBackNote": "The LATEST_FINAL SDK read view exposed CREATED_A_COMMITTED while the parent transaction remained ACCEPTED; no subsequent lifecycle write is authorized until the parent status is FINALIZED.",
+    "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0"
+  },
   "absenceEvidence": {
-    "latestNonce": 204,
-    "pendingNonce": 204,
-    "latestDealForDeployer": "",
-    "lifecycleCreated": false,
+    "latestNonce": 206,
+    "pendingNonce": 206,
+    "latestDealForDeployer": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
+    "lifecycleCreated": true,
     "noCreateDealHash": false,
-    "noStateChange": true,
+    "noStateChange": false,
     "preAttempt4": {
       "latestNonce": 203,
       "pendingNonce": 203,
       "latestDealForDeployer": "",
       "noStateChange": true
+    },
+    "preCorrectedCreateAttempt": {
+      "latestNonce": 205,
+      "pendingNonce": 205,
+      "latestDealForDeployer": "",
+      "noStateChange": true
+    },
+    "postCorrectedCreateAttempt": {
+      "latestNonce": 206,
+      "pendingNonce": 206,
+      "latestDealForDeployer": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
+      "state": "CREATED_A_COMMITTED",
+      "parentStatus": "ACCEPTED",
+      "parentExecution": "FINISHED_WITH_RETURN",
+      "noOfferAssessmentOrBinding": true,
+      "finalityObserved": false
     }
   },
   "lifecycle": {
-    "status": "CREATE_DEAL_FAILED",
-    "createDealHash": "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
+    "status": "CREATE_DEAL_ACCEPTED_FINALITY_PENDING",
+    "createDealHash": "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
+    "dealIdObservedAtAccepted": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
     "assessmentHashes": [],
     "callbackHashes": [],
     "finalVerdict": "NOT_REACHED",
-    "finalState": "initialized",
+    "finalState": "CREATED_A_COMMITTED_OBSERVED_BEFORE_PARENT_FINALITY",
     "isBound": "NOT_RUN",
-    "createDealFailure": "ACCEPTED / FINISHED_WITH_ERROR / CANONICALIZATION_FAILED"
+    "createDealFailure": "attempt 4 FINALIZED / FINISHED_WITH_ERROR / CANONICALIZATION_FAILED",
+    "finalityBlocker": "corrected attempt 5 remains ACCEPTED after bounded reconciliation; no next write permitted"
   },
   "publicFrontend": {
     "status": "NOT_DEPLOYED",
@@ -128,10 +170,10 @@
     "status": "PENDING_FINAL_PUSH_CI"
   },
   "limitations": [
-    "The live DealMesh lifecycle did not start: the one final create attempt failed before deal creation.",
+    "The live DealMesh lifecycle stopped after corrected create attempt 5 remained ACCEPTED; no later write is permitted until its parent reaches FINALIZED.",
     "No Bradbury MATCH, finalized callback, BOUND, or is_bound evidence exists.",
     "Bradbury RPC capacity rejected all three create_deal attempts before a hash was returned.",
-    "The final create_deal transaction returned a hash but failed with CANONICALIZATION_FAILED before record creation.",
+    "Attempt 4 returned a hash but failed with CANONICALIZATION_FAILED because action_digest was encoded as an integer instead of a string; corrected attempt 5 used the literal string and executed successfully but remains ACCEPTED.",
     "No public frontend was deployed because no authenticated hosting session or enabled fallback was available.",
     "Hosted Studio implementation evidence is not an independently verified BOUND receipt package.",
     "V1 has no payments, escrow, settlement, external evidence, action execution, or legal identity."

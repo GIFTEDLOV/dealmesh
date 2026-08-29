@@ -47,15 +47,19 @@ Repository: `GIFTEDLOV/dealmesh`.
 - Contract source: `contracts/deal_mesh.py`, 25,773 bytes,
   SHA-256 `ab86f3748afd58adee1246442ac125f098e64eb4dba3a690113555fd85cace6d`.
 
-The live DealMesh lifecycle remains unstarted. The three earlier
-`create_deal` requests were explicitly rejected before hash with RPC `-32005`
-capacity errors. The one final authorized request returned
-`0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f`, but its
-receipt is `ACCEPTED`/`FINISHED_WITH_ERROR` and its trace error is
-`CANONICALIZATION_FAILED`; no deal was created and the creator’s latest deal
-remains empty. No Bradbury `MATCH`, callback, `BOUND`, or `is_bound` evidence
-exists. Release is blocked by this failed create execution and unavailable
-public hosting.
+The live DealMesh lifecycle is incomplete. The three earlier `create_deal`
+requests were explicitly rejected before hash with RPC `-32005` capacity
+errors. Attempt 4 returned
+`0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f` and
+finalized with `FINISHED_WITH_ERROR` / `CANONICALIZATION_FAILED` because the
+action digest was encoded as an integer. Corrected attempt 5 returned
+`0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0` using
+the exact literal digest string and executed successfully, but remains
+`ACCEPTED` pending finality. Its `CREATED_A_COMMITTED` record is observed in
+the `LATEST_FINAL` read view but is not treated as finalized authorization.
+No accept, offer, `MATCH`, finalized assessment callback, `BOUND`, or
+`is_bound` Bradbury evidence exists. Release is blocked by pending finality
+and unavailable public hosting.
 
 Existing hosted Studio implementations exercised multi-validator semantics and
 finalized callbacks. The preserved repository evidence does not contain enough

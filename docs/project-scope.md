@@ -6,8 +6,8 @@ DealMesh is a GenLayer PROJECT contribution. The repository now contains the
 application-specific Intelligent Contract, wallet-backed GenLayerJS
 frontend, deterministic/mocked tests, and a genuine multi-validator Studio
 finality probe. Bradbury deployment is finalized and successfully executed,
-but the live lifecycle remains unstarted after the final create attempt failed
-before deal creation.
+but the corrected create attempt remains `ACCEPTED` pending finality; no later
+lifecycle action has been authorized.
 
 ## In scope
 
@@ -57,9 +57,14 @@ does not contain sufficient immutable receipts or hashes to independently prove
 a final `BOUND` authorization. Local
 Studio is currently blocked by an empty validator set, but this is distinct
 from the hosted implementation evidence. Bradbury deployment is finalized and
-successfully executed at `0xCEFf63f9d66b4F60E854Ef3Eb4d2a35096037247`; the live
-lifecycle remains unstarted because the one final authorized `create_deal`
-attempt returned `0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f`
-but failed with `CANONICALIZATION_FAILED` before creating a deal. No MATCH,
-callback, BOUND, or `is_bound` Bradbury evidence exists. Release remains
-blocked by that failed write and unavailable public hosting.
+successfully executed at `0xCEFf63f9d66b4F60E854Ef3Eb4d2a35096037247`. Attempt 4
+returned `0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f`
+and failed with `CANONICALIZATION_FAILED` because its action digest was
+encoded as an integer. Corrected attempt 5 returned
+`0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0` with a
+literal string digest and executed successfully, but remains `ACCEPTED` rather
+than `FINALIZED`. A `CREATED_A_COMMITTED` record is visible in the
+`LATEST_FINAL` read view, but no subsequent lifecycle action is authorized
+before parent finality. No MATCH, callback, BOUND, or `is_bound` Bradbury
+evidence exists. Release remains blocked by pending finality and unavailable
+public hosting.

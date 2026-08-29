@@ -1,6 +1,6 @@
 {
   "schema": "dealmesh/bradbury-release/v1",
-  "status": "CREATE_DEAL_FAILED_CANONICALIZATION",
+  "status": "CREATE_DEAL_ACCEPTED_PENDING_FINALITY",
   "deploymentBroadcasted": true,
   "createDealBroadcasted": true,
   "network": {
@@ -42,7 +42,7 @@
   "createDeal": {
     "operation": "create_deal",
     "broadcasted": true,
-    "attemptCount": 4,
+    "attemptCount": 5,
     "attempts": [
       {
         "sequence": 1,
@@ -86,11 +86,29 @@
         "timestampAvailability": "UNAVAILABLE",
         "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
         "returnedHash": "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
-        "status": "ACCEPTED",
-        "executionResult": "FAILED",
+        "status": "FINALIZED",
+        "executionResult": "FINISHED_WITH_ERROR",
         "rpcCode": null,
         "rpcMessage": null,
-        "retryAfterMs": null
+        "retryAfterMs": null,
+        "failureReason": "CANONICALIZATION_FAILED",
+        "actionDigestEncoding": "integer",
+        "actionDigestDecodedValue": "77194726158210796949047323339125271902179989777093709359638389338608753093290",
+        "actionDigestRequiredEncoding": "literal string 0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "sequence": 5,
+        "timestampUtc": null,
+        "timestampAvailability": "UNAVAILABLE",
+        "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "returnedHash": "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
+        "status": "ACCEPTED",
+        "executionResult": "FINISHED_WITH_RETURN",
+        "rpcCode": null,
+        "rpcMessage": null,
+        "retryAfterMs": null,
+        "actionDigestEncoding": "literal string",
+        "actionDigest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       }
     ],
     "preAttempt4AbsenceEvidence": {
@@ -109,12 +127,41 @@
     },
     "sameHashReconciliation": {
       "transactionHash": "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
-      "status": "ACCEPTED",
-      "executionResult": "FAILED",
+      "status": "FINALIZED",
+      "executionResult": "FINISHED_WITH_ERROR",
       "txExecutionHash": "0xc02451b12ae1fe4f3b769d35a73697c87a72a392cec3b36f4b97d31d8d2e46c0",
       "txExecutionResultName": "FINISHED_WITH_ERROR",
       "traceError": "CANONICALIZATION_FAILED",
+      "rootCause": "action_digest was encoded as an integer instead of the required literal string",
+      "actionDigestDecodedValue": "77194726158210796949047323339125271902179989777093709359638389338608753093290",
       "resultingState": "no deal; get_latest_deal_for(deployer) is empty"
+    },
+    "activeAttempt": {
+      "sequence": 5,
+      "transactionHash": "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
+      "status": "ACCEPTED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "resultName": "AGREE",
+      "finality": "PENDING",
+      "actionDigestEncoding": "literal string",
+      "acceptedStateReadBack": {
+        "readVariant": "LATEST_FINAL",
+        "dealId": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
+        "state": "CREATED_A_COMMITTED",
+        "partyA": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "partyB": "0x6311de989ab01ae4da77d36cc45d495fbcd4b7a8",
+        "priceUnit": "USD",
+        "aMaxPrice": 1000,
+        "aLatestDeadline": 4102444800,
+        "aRequirements": "use the exact secure-email channel",
+        "actionDigest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "",
+        "offer": "",
+        "assessment": "",
+        "binding": false,
+        "note": "Observed in the SDK LATEST_FINAL read view while the parent transaction status remained ACCEPTED; not treated as finalized lifecycle authorization."
+      },
+      "resultingState": "deal observed as CREATED_A_COMMITTED in LATEST_FINAL read view; parent finality status still ACCEPTED"
     }
   },
   "writeRecordSchema": {
@@ -145,11 +192,24 @@
       "expectedPrecondition": "chainId 4221; initialized contract; no deal; deployer latest/pending nonce 203/203; locked secure-email fixture",
       "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
       "returnedHash": "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
-      "status": "ACCEPTED",
-      "executionResult": "FAILED",
+      "status": "FINALIZED",
+      "executionResult": "FINISHED_WITH_ERROR",
       "triggeredCallbackHash": null,
-      "resultingState": "no deal; execution trace CANONICALIZATION_FAILED; receipt status ACCEPTED / FINISHED_WITH_ERROR",
+      "resultingState": "no deal; action_digest was encoded as an integer instead of a string; receipt status FINALIZED / FINISHED_WITH_ERROR / CANONICALIZATION_FAILED",
       "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f"
+    },
+    {
+      "operation": "create_deal",
+      "expectedPrecondition": "chainId 4221; initialized contract; no deal; deployer latest/pending nonce 205/205; locked secure-email fixture; action_digest encoded as a literal string",
+      "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      "returnedHash": "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
+      "status": "ACCEPTED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "resultName": "AGREE",
+      "finality": "PENDING",
+      "triggeredCallbackHash": null,
+      "resultingState": "deal observed as CREATED_A_COMMITTED in LATEST_FINAL read view; parent status ACCEPTED and finality not observed",
+      "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0"
     }
   ],
   "plannedWrites": [
@@ -232,9 +292,10 @@
   },
   "transactionHashes": [
     "0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397",
-    "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f"
+    "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
+    "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0"
   ],
-  "lifecycleStatus": "CREATE_DEAL_FAILED",
+  "lifecycleStatus": "CREATE_DEAL_ACCEPTED_FINALITY_PENDING",
   "publicFrontend": {
     "status": "NOT_DEPLOYED",
     "provider": null,
