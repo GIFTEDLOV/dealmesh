@@ -445,13 +445,16 @@
   ],
   "lifecycleStatus": "BOUND",
   "publicFrontend": {
-    "status": "NOT_DEPLOYED",
-    "provider": null,
-    "deploymentId": null,
-    "url": null,
-    "reason": "No authenticated Vercel session; GitHub CLI token is invalid; no alternate hosting CLI is configured"
+    "status": "DEPLOYED",
+    "provider": "GitHub Pages",
+    "deploymentId": "6160405466",
+    "workflowRunId": "33276658304",
+    "url": "https://giftedlov.github.io/dealmesh/",
+    "httpStatus": 200,
+    "deploymentStatus": "success",
+    "reason": "Published through the official GitHub Pages workflow"
   },
-  "releaseGate": "BLOCKED_PUBLIC_FRONTEND_HOSTING",
+  "releaseGate": "PASS",
   "reconciliation": {
     "persistImmediatelyAfterBroadcast": true,
     "reconcileSameHashOnly": true,

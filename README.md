@@ -137,9 +137,9 @@ The hosted Studio evidence is ephemeral test-network evidence, not a public
 deployment or production economic integration. Local Studio is currently
 blocked by its empty validator registry; this does not invalidate the recorded
 hosted semantic/callback exercise. The Bradbury lifecycle above is the
-independently reconciled live proof. Public frontend deployment remains
-blocked because no authenticated Vercel session is available and the
-configured GitHub CLI token is invalid.
+independently reconciled live proof. The production frontend is publicly
+deployed at https://giftedlov.github.io/dealmesh/ through GitHub Pages
+deployment 6160405466; its published HTML responds HTTP 200.
 
 ## Gate status
 
@@ -150,14 +150,16 @@ configured GitHub CLI token is invalid.
 | DETERMINISTIC_CI_GATE | PASS |
 | STUDIO_INTEGRATION_GATE | PASS — hosted multi-validator Studio implementation evidence; no independent BOUND receipt proof |
 | LOCAL_STUDIO_HEALTH | BLOCKED — zero configured local validators |
-| RELEASE_GATE | BLOCKED - unavailable public hosting |
+| RELEASE_GATE | PASS — finalized Bradbury BOUND proof and public GitHub Pages frontend |
 
 The hosted test implementations exercised multi-validator semantics and
 finalized callbacks, but the preserved repository evidence does not contain
 sufficient immutable receipts or hashes to independently prove a hosted
 `BOUND` authorization. Bradbury provides the independently reconciled live
-`MATCH` and `BOUND` proof above. The frontend has not been published because
-the available hosting credentials are unavailable; no public URL is claimed.
+`MATCH` and `BOUND` proof above. The public frontend is available at
+https://giftedlov.github.io/dealmesh/. Interactive browser smoke was not run
+because no browser connector was available in the release environment; the
+published page and HTTP 200 were verified independently.
 
 ## Security/trust model
 

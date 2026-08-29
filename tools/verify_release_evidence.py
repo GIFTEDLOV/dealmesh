@@ -110,7 +110,10 @@ def verify() -> list[str]:
     require(reconciliation.get("rootCause") == "action_digest was encoded as an integer instead of the required literal string", "create failure root cause mismatch")
     require(reconciliation.get("actionDigestDecodedValue") == "77194726158210796949047323339125271902179989777093709359638389338608753093290", "create failure decoded action digest mismatch")
     require(manifest.get("lifecycleStatus") == "BOUND", "manifest lifecycle status mismatch")
-    require(manifest.get("publicFrontend", {}).get("status") == "NOT_DEPLOYED", "manifest frontend status mismatch")
+    frontend = manifest.get("publicFrontend", {})
+    require(frontend.get("status") == "DEPLOYED", "manifest frontend status mismatch")
+    require(frontend.get("provider") == "GitHub Pages" and frontend.get("deploymentId") == "6160405466", "manifest frontend deployment mismatch")
+    require(frontend.get("url") == "https://giftedlov.github.io/dealmesh/" and frontend.get("httpStatus") == 200, "manifest frontend URL mismatch")
     writes = manifest.get("writes", [])
     expected_operations = [
         "deploy",
@@ -214,9 +217,11 @@ def verify() -> list[str]:
     require(lifecycle.get("bindingCallbackHash") == "0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6", "final proof binding callback mismatch")
     require(lifecycle.get("finalState") == "BOUND", "final proof final state mismatch")
     require(lifecycle.get("isBound", {}).get("exact") is True and lifecycle.get("isBound", {}).get("wrongDigestResult") is False, "final proof is_bound result mismatch")
-    require(proof.get("publicFrontend", {}).get("status") == "NOT_DEPLOYED", "final proof frontend status mismatch")
-    require(proof.get("publicFrontend", {}).get("url") is None, "final proof unexpectedly contains a frontend URL")
-    require(proof.get("releaseGate") == "BLOCKED_PUBLIC_FRONTEND_HOSTING", "final proof release gate mismatch")
+    proof_frontend = proof.get("publicFrontend", {})
+    require(proof_frontend.get("status") == "DEPLOYED", "final proof frontend status mismatch")
+    require(proof_frontend.get("provider") == "GitHub Pages" and proof_frontend.get("deploymentId") == "6160405466", "final proof frontend deployment mismatch")
+    require(proof_frontend.get("url") == "https://giftedlov.github.io/dealmesh/" and proof_frontend.get("httpStatus") == 200, "final proof frontend URL mismatch")
+    require(proof.get("releaseGate") == "PASS", "final proof release gate mismatch")
     corrected = proof.get("correctedCreateAttempt", {})
     require(corrected.get("returnedHash") == final_attempt.get("returnedHash"), "proof corrected create hash mismatch")
     require(corrected.get("status") == "FINALIZED" and corrected.get("executionResult") == "FINISHED_WITH_RETURN", "proof corrected create terminal evidence mismatch")
@@ -233,7 +238,7 @@ def verify() -> list[str]:
         require("canonicalization_failed" in lower, f"{path} lacks final create failure evidence")
     candidate = (ROOT / "docs" / "candidate-gate.md").read_text(encoding="utf-8")
     require("STUDIO_INTEGRATION_GATE" in candidate and "hosted multi-validator" in candidate, "candidate gate hosted status missing")
-    require("RELEASE_GATE" in candidate and ("hosting" in candidate.lower() or "capacity" in candidate.lower()), "candidate gate release blocker missing")
+    require("RELEASE_GATE" in candidate and ("publicly available" in candidate.lower() or "hosting" in candidate.lower() or "capacity" in candidate.lower()), "candidate gate release status missing")
 
     return errors
 

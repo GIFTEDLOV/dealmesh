@@ -66,9 +66,9 @@ the exact literal digest string and finalized successfully as
   finalized callback `0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6`.
 
 The final contract read-back is `BOUND`; exact `is_bound` is `true` and the
-deliberate wrong digest returns `false`. Public frontend deployment remains
-blocked because Vercel is unauthenticated and the configured GitHub CLI token
-is invalid.
+deliberate wrong digest returns `false`. The production frontend is publicly
+deployed at https://giftedlov.github.io/dealmesh/ through GitHub Pages
+deployment `6160405466`; the published page responds HTTP 200.
 
 Existing hosted Studio implementations exercised multi-validator semantics and
 finalized callbacks. The preserved repository evidence does not contain enough
@@ -97,10 +97,12 @@ locked lifecycle reached `BOUND`, and exact and wrong-digest authorization
 reads returned `true` and `false`. The remaining release blocker is public
 frontend hosting, not lifecycle evidence.
 
-Reserved for a later hosting update:
+Public frontend:
 
-- public frontend URL and deployment identifier (not yet available because no
-  authenticated hosting provider is configured).
+- URL: https://giftedlov.github.io/dealmesh/
+- GitHub Pages deployment: `6160405466`
+- Published HTML: HTTP 200
+- Browser connector smoke check: unavailable in the release environment.
 
 See `artifacts/dealmesh-final-release-proof.json` and
 `docs/genlayer-bradbury-capacity-report.md` for the machine-readable evidence

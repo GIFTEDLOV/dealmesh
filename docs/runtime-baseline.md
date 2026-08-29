@@ -102,6 +102,8 @@ Local Studio finality and full project integration (when enabled):
     $env:DEALMESH_STUDIO='1'
     python -m pytest tests/integration -m studio -q
 
-The public frontend is not yet deployed because the available Vercel session is
-unauthenticated and the configured GitHub CLI token is invalid. No hosting
-credential is stored in the repository.
+The public frontend is deployed through GitHub Pages at
+https://giftedlov.github.io/dealmesh/ (deployment `6160405466`) and responds
+HTTP 200. No hosting credential is stored in the repository. Interactive
+browser smoke was unavailable because the release environment had no browser
+connector.

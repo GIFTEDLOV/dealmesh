@@ -7,8 +7,8 @@ application-specific Intelligent Contract, wallet-backed GenLayerJS
 frontend, deterministic/mocked tests, and a genuine multi-validator Studio
 finality probe. Bradbury deployment is finalized and successfully executed,
 and the single locked live lifecycle has independently reached `BOUND` with
-exact downstream authorization checks. Public frontend hosting remains
-pending because no authenticated provider is available.
+exact downstream authorization checks. The production frontend is publicly
+available at https://giftedlov.github.io/dealmesh/ through GitHub Pages.
 
 ## In scope
 

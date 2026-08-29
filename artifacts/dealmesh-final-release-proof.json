@@ -170,24 +170,27 @@
     }
   },
   "publicFrontend": {
-    "status": "NOT_DEPLOYED",
-    "provider": null,
-    "deploymentId": null,
-    "url": null,
-    "reason": "No authenticated Vercel session; GitHub CLI token is invalid; no alternate hosting CLI is configured"
+    "status": "DEPLOYED",
+    "provider": "GitHub Pages",
+    "deploymentId": "6160405466",
+    "workflowRunId": "33276658304",
+    "url": "https://giftedlov.github.io/dealmesh/",
+    "httpStatus": 200,
+    "deploymentStatus": "success",
+    "reason": "Published through the official GitHub Pages workflow"
   },
-  "releaseGate": "BLOCKED_PUBLIC_FRONTEND_HOSTING",
+  "releaseGate": "PASS",
   "verification": {
     "finalCiUrl": null,
     "finalCiHead": null,
     "status": "PENDING_EXACT_HEAD_CI"
   },
   "limitations": [
-    "The Bradbury lifecycle proof is complete through BOUND, but no public frontend URL is available because no authenticated hosting provider or enabled fallback is configured.",
+    "The Bradbury lifecycle proof is complete through BOUND and the production frontend is publicly available through GitHub Pages.",
     "The three historical Bradbury capacity rejections, the integer-encoded attempt 4 failure, and the corrected finalized lifecycle are preserved separately.",
     "Bradbury RPC capacity rejected all three initial create_deal attempts before a hash was returned.",
     "Attempt 4 returned a hash but failed with CANONICALIZATION_FAILED because action_digest was encoded as an integer instead of a string; corrected attempt 5 used the literal string and executed successfully.",
-    "No public frontend was deployed because no authenticated hosting session or enabled fallback was available.",
+    "The interactive browser connector was unavailable in the release environment; the published page and HTTP 200 were verified independently.",
     "Hosted Studio implementation evidence is not an independently verified BOUND receipt package.",
     "V1 has no payments, escrow, settlement, external evidence, action execution, or legal identity."
   ]
