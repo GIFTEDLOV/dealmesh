@@ -1,6 +1,6 @@
 {
   "schema": "dealmesh/bradbury-release/v1",
-  "status": "CREATE_DEAL_ACCEPTED_PENDING_FINALITY",
+  "status": "BOUND",
   "deploymentBroadcasted": true,
   "createDealBroadcasted": true,
   "network": {
@@ -102,13 +102,16 @@
         "timestampAvailability": "UNAVAILABLE",
         "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
         "returnedHash": "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
-        "status": "ACCEPTED",
+        "status": "FINALIZED",
         "executionResult": "FINISHED_WITH_RETURN",
         "rpcCode": null,
         "rpcMessage": null,
         "retryAfterMs": null,
         "actionDigestEncoding": "literal string",
-        "actionDigest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        "actionDigest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "finality": "FINALIZED",
+        "finalizedReadBack": "CREATED_A_COMMITTED",
+        "readBackNote": "The corrected create transaction finalized successfully and its exact deal record was read back."
       }
     ],
     "preAttempt4AbsenceEvidence": {
@@ -139,12 +142,12 @@
     "activeAttempt": {
       "sequence": 5,
       "transactionHash": "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
-      "status": "ACCEPTED",
+      "status": "FINALIZED",
       "executionResult": "FINISHED_WITH_RETURN",
       "resultName": "AGREE",
-      "finality": "PENDING",
+      "finality": "FINALIZED",
       "actionDigestEncoding": "literal string",
-      "acceptedStateReadBack": {
+      "finalizedStateReadBack": {
         "readVariant": "LATEST_FINAL",
         "dealId": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
         "state": "CREATED_A_COMMITTED",
@@ -154,14 +157,9 @@
         "aMaxPrice": 1000,
         "aLatestDeadline": 4102444800,
         "aRequirements": "use the exact secure-email channel",
-        "actionDigest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "offerDigest": "",
-        "offer": "",
-        "assessment": "",
-        "binding": false,
-        "note": "Observed in the SDK LATEST_FINAL read view while the parent transaction status remained ACCEPTED; not treated as finalized lifecycle authorization."
+        "actionDigest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       },
-      "resultingState": "deal observed as CREATED_A_COMMITTED in LATEST_FINAL read view; parent finality status still ACCEPTED"
+      "resultingState": "CREATED_A_COMMITTED finalized read-back; exact party, bounds, requirements, and action digest verified"
     }
   },
   "writeRecordSchema": {
@@ -169,7 +167,7 @@
     "expectedPrecondition": "string",
     "sender": "0x... or contract",
     "returnedHash": "0x...",
-    "status": "SUBMITTED|ACCEPTED|FINALIZED|FAILED|REJECTED_NO_HASH|UNKNOWN_SUBMISSION",
+    "status": "SUBMITTED|ACCEPTED|FINALIZED|FAILED|REJECTED_NO_HASH|RECONCILED_NO_BROADCAST|UNKNOWN_SUBMISSION",
     "executionResult": "FINISHED_WITH_RETURN|FAILED|UNKNOWN",
     "triggeredCallbackHash": "0x... or null",
     "resultingState": "string",
@@ -203,13 +201,157 @@
       "expectedPrecondition": "chainId 4221; initialized contract; no deal; deployer latest/pending nonce 205/205; locked secure-email fixture; action_digest encoded as a literal string",
       "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
       "returnedHash": "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
-      "status": "ACCEPTED",
+      "status": "FINALIZED",
       "executionResult": "FINISHED_WITH_RETURN",
       "resultName": "AGREE",
-      "finality": "PENDING",
+      "finality": "FINALIZED",
       "triggeredCallbackHash": null,
-      "resultingState": "deal observed as CREATED_A_COMMITTED in LATEST_FINAL read view; parent status ACCEPTED and finality not observed",
+      "resultingState": "deal finalized as CREATED_A_COMMITTED; exact deal record read back",
       "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0"
+    },
+    {
+      "operation": "accept_participation",
+      "expectedPrecondition": "deal 0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a is CREATED_A_COMMITTED; sender is exact Party B 0x6311de989ab01ae4da77d36cc45d495fbcd4b7a8",
+      "sender": "0x6311de989ab01ae4da77d36cc45d495fbcd4b7a8",
+      "returnedHash": "0x9b4062e1763ec10b2c8709f4a35d85c97343bb9913aba41043e4ab36e2186a8f",
+      "status": "FINALIZED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "resultName": "AGREE",
+      "finality": "FINALIZED",
+      "triggeredCallbackHash": null,
+      "finalizedReadBack": {
+        "dealId": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
+        "state": "ACTIVE_B_COMMITTED",
+        "partyA": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "partyB": "0x6311de989ab01ae4da77d36cc45d495fbcd4b7a8",
+        "priceUnit": "USD",
+        "bMinPrice": 100,
+        "bEarliestDeadline": 1,
+        "bRequirements": "use the exact secure-email channel"
+      },
+      "resultingState": "ACTIVE_B_COMMITTED finalized read-back; exact Party B commitment verified",
+      "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x9b4062e1763ec10b2c8709f4a35d85c97343bb9913aba41043e4ab36e2186a8f"
+    },
+    {
+      "operation": "submit_offer",
+      "expectedPrecondition": "deal 0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a is ACTIVE_B_COMMITTED; Party A; literal action digest and exact secure-email JSON terms",
+      "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      "returnedHash": null,
+      "status": "RECONCILED_NO_BROADCAST",
+      "executionResult": "NOT_BROADCAST",
+      "triggeredCallbackHash": null,
+      "reconciliation": {
+        "deployerLatestNonce": 207,
+        "deployerPendingNonce": 207,
+        "acceptedOffer": "",
+        "finalizedOffer": "",
+        "acceptedDealState": "ACTIVE_B_COMMITTED",
+        "finalizedDealState": "ACTIVE_B_COMMITTED",
+        "network": "fully synced; blocks substantially progressed",
+        "conclusion": "NOT_BROADCAST"
+      },
+      "resultingState": "independent reconciliation proves no offer broadcast; safe to make one fresh submission",
+      "explorerUrl": null
+    },
+    {
+      "operation": "submit_offer",
+      "expectedPrecondition": "deal 0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a is ACTIVE_B_COMMITTED; Party A; literal action digest and exact secure-email JSON terms",
+      "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      "returnedHash": "0x77a1751faddc9b6a952ea16e2895ea8f9d69590e4f3217b471964321e0689c60",
+      "status": "FINALIZED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "resultName": "AGREE",
+      "txExecutionHash": "0x443d19bd5b32c24fc4b07e1fd2c5ed246ad22f0122670e89847cd1b042539d4a",
+      "finality": "FINALIZED",
+      "offerDigest": "0xe9967bcc89af22d77068dbe374f0d6e11b5f5941b832a4ee00d6c2c71620f6b1",
+      "offerReadBack": {
+        "dealId": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
+        "state": "OFFER_SUBMITTED",
+        "price": 500,
+        "deadline": 2000000000,
+        "actionDigest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "termsJson": "[{\"key\":\"channel\",\"value\":\"secure-email\"}]",
+        "submittedBy": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
+      },
+      "triggeredCallbackHash": null,
+      "resultingState": "OFFER_SUBMITTED finalized read-back; exact offer digest 0xe9967bcc89af22d77068dbe374f0d6e11b5f5941b832a4ee00d6c2c71620f6b1",
+      "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x77a1751faddc9b6a952ea16e2895ea8f9d69590e4f3217b471964321e0689c60"
+    },
+    {
+      "operation": "assess_offer",
+      "expectedPrecondition": "deal 0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a is OFFER_SUBMITTED with exact offer digest 0xe9967bcc89af22d77068dbe374f0d6e11b5f5941b832a4ee00d6c2c71620f6b1",
+      "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      "returnedHash": "0xbc936bbf937a3ec06095d518c8f47999ddb591c653c4840523037e68d194b796",
+      "status": "FINALIZED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "resultName": "AGREE",
+      "txExecutionHash": "0x99aa76330fa0c7d188b3cdab68bb0489c0012508a3b0e9bcb826061e89ec964e",
+      "finality": "FINALIZED",
+      "assessmentId": "0x9067f19087f7deaba024e7ab7e1e1559c6a92107cc0f26005152f6f399257591",
+      "assessmentReadBack": {
+        "dealId": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
+        "offerDigest": "0xe9967bcc89af22d77068dbe374f0d6e11b5f5941b832a4ee00d6c2c71620f6b1",
+        "verdict": "MATCH",
+        "state": "ASSESSED_MATCH_FINALIZED",
+        "assessmentNonce": 1,
+        "submittedBy": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
+      },
+      "triggeredCallbackHash": "0x7fdba86d51bd2f48f78b12c02148a137a0cba2dec39cc57b0b88659dd963a333",
+      "resultingState": "MATCH assessment finalized; callback 0x7fdba86d51bd2f48f78b12c02148a137a0cba2dec39cc57b0b88659dd963a333 finalized with ASSESSED_MATCH_FINALIZED read-back",
+      "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0xbc936bbf937a3ec06095d518c8f47999ddb591c653c4840523037e68d194b796"
+    },
+    {
+      "operation": "finalize_assessment",
+      "expectedPrecondition": "assess_offer 0xbc936bbf937a3ec06095d518c8f47999ddb591c653c4840523037e68d194b796 is FINALIZED / FINISHED_WITH_RETURN with exact MATCH assessment",
+      "sender": "contract",
+      "returnedHash": "0x7fdba86d51bd2f48f78b12c02148a137a0cba2dec39cc57b0b88659dd963a333",
+      "status": "FINALIZED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "resultName": "AGREE",
+      "txExecutionHash": "0x5e50c518761043a66c8012ea727fb7246be11b225efb7438f2a778a6597b1537",
+      "finality": "FINALIZED",
+      "triggeredCallbackHash": null,
+      "resultingState": "ASSESSED_MATCH_FINALIZED read-back with exact MATCH assessment",
+      "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x7fdba86d51bd2f48f78b12c02148a137a0cba2dec39cc57b0b88659dd963a333"
+    },
+    {
+      "operation": "bind_match",
+      "expectedPrecondition": "deal 0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a is ASSESSED_MATCH_FINALIZED with exact MATCH and offer digest 0xe9967bcc89af22d77068dbe374f0d6e11b5f5941b832a4ee00d6c2c71620f6b1; sender is non-submitting Party B",
+      "sender": "0x6311de989ab01ae4da77d36cc45d495fbcd4b7a8",
+      "returnedHash": "0xe59593d0c117799ea512c2152b2609e2a08f4897a500709c3ccc9bc047881dc5",
+      "status": "FINALIZED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "resultName": "AGREE",
+      "txExecutionHash": "0xb5885cd81b6f9a99b28e47e76969afb6ff07d5d2b02b6270950ef3bcab5c986c",
+      "finality": "FINALIZED",
+      "bindingRequestId": "0xd7359a2699cc7ee9b55fa1513b31b7de7a068643e7f2b86eab8f2c37abbec80d",
+      "triggeredCallbackHash": "0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6",
+      "resultingState": "BOUND read-back after finalized binding callback; bound_by Party B",
+      "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0xe59593d0c117799ea512c2152b2609e2a08f4897a500709c3ccc9bc047881dc5"
+    },
+    {
+      "operation": "finalize_binding",
+      "expectedPrecondition": "bind_match 0xe59593d0c117799ea512c2152b2609e2a08f4897a500709c3ccc9bc047881dc5 is FINALIZED / FINISHED_WITH_RETURN; exact offer digest and request ID",
+      "sender": "contract",
+      "returnedHash": "0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6",
+      "status": "FINALIZED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "resultName": "AGREE",
+      "txExecutionHash": "0x265447447a2a57495c70e23cac6ddc8dacb33553bc602303c60533bb034f43f6",
+      "finality": "FINALIZED",
+      "triggeredCallbackHash": null,
+      "resultingState": "finalized callback produced BOUND; exact is_bound true and wrong-digest false",
+      "finalReadBack": {
+        "dealId": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
+        "state": "BOUND",
+        "boundBy": "0x6311de989ab01ae4da77d36cc45d495fbcd4b7a8",
+        "agreementDigest": "0xe92613f220fcecc5902449755b5ad94945fc0cae0b969ab31aa411ccd653a78f",
+        "offerDigest": "0xe9967bcc89af22d77068dbe374f0d6e11b5f5941b832a4ee00d6c2c71620f6b1",
+        "exactIsBound": true,
+        "wrongDigest": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "wrongIsBound": false
+      },
+      "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6"
     }
   ],
   "plannedWrites": [
@@ -245,7 +387,7 @@
       "operation": "assess_offer",
       "expectedPrecondition": "deal is OFFER_SUBMITTED; exact offer digest matches stored offer",
       "sender": "deployer",
-      "resultingState": "assessment pending FINALIZED callback",
+      "resultingState": "MATCH assessment finalized with ASSESSED_MATCH_FINALIZED read-back",
       "explorerUrl": null
     },
     {
@@ -259,7 +401,7 @@
       "operation": "bind_match",
       "expectedPrecondition": "exact assessment is ASSESSED_MATCH_FINALIZED; sender is the non-submitting Party B",
       "sender": "partyB",
-      "resultingState": "binding pending FINALIZED callback",
+      "resultingState": "BOUND after finalized binding callback for the exact deal and offer digest",
       "explorerUrl": null
     },
     {
@@ -293,17 +435,23 @@
   "transactionHashes": [
     "0x90adf6a255c996331e1186553e4e687d2548635a56fcf427d4ed82e04ba66397",
     "0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f",
-    "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0"
+    "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
+    "0x9b4062e1763ec10b2c8709f4a35d85c97343bb9913aba41043e4ab36e2186a8f",
+    "0x77a1751faddc9b6a952ea16e2895ea8f9d69590e4f3217b471964321e0689c60",
+    "0xbc936bbf937a3ec06095d518c8f47999ddb591c653c4840523037e68d194b796",
+    "0x7fdba86d51bd2f48f78b12c02148a137a0cba2dec39cc57b0b88659dd963a333",
+    "0xe59593d0c117799ea512c2152b2609e2a08f4897a500709c3ccc9bc047881dc5",
+    "0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6"
   ],
-  "lifecycleStatus": "CREATE_DEAL_ACCEPTED_FINALITY_PENDING",
+  "lifecycleStatus": "BOUND",
   "publicFrontend": {
     "status": "NOT_DEPLOYED",
     "provider": null,
     "deploymentId": null,
     "url": null,
-    "reason": "Vercel has no authenticated session; GitHub Pages is not enabled and the configured GitHub CLI token is invalid"
+    "reason": "No authenticated Vercel session; GitHub CLI token is invalid; no alternate hosting CLI is configured"
   },
-  "releaseGate": "BLOCKED",
+  "releaseGate": "BLOCKED_PUBLIC_FRONTEND_HOSTING",
   "reconciliation": {
     "persistImmediatelyAfterBroadcast": true,
     "reconcileSameHashOnly": true,

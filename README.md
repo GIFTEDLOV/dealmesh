@@ -101,13 +101,21 @@ Attempt 4 returned `0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf
 and finalized with `FINISHED_WITH_ERROR` / `CANONICALIZATION_FAILED` because
 the action digest was encoded as an integer instead of a literal string. One
 corrected attempt, `0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0`,
-was broadcast through GenLayerJS with the exact digest string and has
-`AGREE` / `FINISHED_WITH_RETURN`, but remains `ACCEPTED` pending finality.
-Bradbury exposes `CREATED_A_COMMITTED` for that accepted transaction in the
-`LATEST_FINAL` read view, but this is not treated as a finalized lifecycle
-authorization. No accept, offer, semantic assessment, finalized callback,
-`MATCH`, `BOUND`, or `is_bound` proof exists, and the live lifecycle remains
-incomplete.
+was broadcast through GenLayerJS with the exact digest string and finalized
+with `AGREE` / `FINISHED_WITH_RETURN` as `CREATED_A_COMMITTED`. Party B then
+accepted with `0x9b4062e1763ec10b2c8709f4a35d85c97343bb9913aba41043e4ab36e2186a8f`.
+Party A submitted offer digest
+`0xe9967bcc89af22d77068dbe374f0d6e11b5f5941b832a4ee00d6c2c71620f6b1` with
+`0x77a1751faddc9b6a952ea16e2895ea8f9d69590e4f3217b471964321e0689c60`.
+The assessment `0xbc936bbf937a3ec06095d518c8f47999ddb591c653c4840523037e68d194b796`
+finalized with `MATCH`; its finalized callback is
+`0x7fdba86d51bd2f48f78b12c02148a137a0cba2dec39cc57b0b88659dd963a333`.
+Party B bound the exact offer with
+`0xe59593d0c117799ea512c2152b2609e2a08f4897a500709c3ccc9bc047881dc5`; the
+finalized binding callback is
+`0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6`.
+The final read-back is `BOUND`, exact `is_bound` is `true`, and the deliberate
+wrong digest returns `false`.
 
 Run the local checks with:
 
@@ -128,10 +136,10 @@ python -m pytest tests/integration -m studio -q
 The hosted Studio evidence is ephemeral test-network evidence, not a public
 deployment or production economic integration. Local Studio is currently
 blocked by its empty validator registry; this does not invalidate the recorded
-hosted semantic/callback exercise. Release remains blocked because the final
-Bradbury create attempt failed before deal creation and the frontend could not
-be published: no authenticated Vercel session or usable GitHub Pages
-configuration is available. No later Bradbury write was sent.
+hosted semantic/callback exercise. The Bradbury lifecycle above is the
+independently reconciled live proof. Public frontend deployment remains
+blocked because no authenticated Vercel session is available and the
+configured GitHub CLI token is invalid.
 
 ## Gate status
 
@@ -142,15 +150,14 @@ configuration is available. No later Bradbury write was sent.
 | DETERMINISTIC_CI_GATE | PASS |
 | STUDIO_INTEGRATION_GATE | PASS — hosted multi-validator Studio implementation evidence; no independent BOUND receipt proof |
 | LOCAL_STUDIO_HEALTH | BLOCKED — zero configured local validators |
-| RELEASE_GATE | BLOCKED - corrected create finality pending and unavailable public hosting |
+| RELEASE_GATE | BLOCKED - unavailable public hosting |
 
 The hosted test implementations exercised multi-validator semantics and
 finalized callbacks, but the preserved repository evidence does not contain
-sufficient immutable receipts or hashes to independently prove a final
-`BOUND` authorization. Bradbury attempt 4 failed from the integer-encoded
-action digest; corrected attempt 5 is accepted with a created record visible
-in the read view but is not yet finalized, so no public authorization or
-frontend URL exists.
+sufficient immutable receipts or hashes to independently prove a hosted
+`BOUND` authorization. Bradbury provides the independently reconciled live
+`MATCH` and `BOUND` proof above. The frontend has not been published because
+the available hosting credentials are unavailable; no public URL is claimed.
 
 ## Security/trust model
 

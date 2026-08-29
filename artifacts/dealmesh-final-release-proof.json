@@ -3,9 +3,9 @@
   "contributionType": "Project",
   "repository": "GIFTEDLOV/dealmesh",
   "evidenceCheckpointHead": "b3fae4e0fc2c7c35d01fdcb3e969a78a0ee6c817",
-  "releaseHead": "02dff03d9697668743088fdb5dc3e6c4ad4c63e5",
-  "repositoryHead": "b3fae4e0fc2c7c35d01fdcb3e969a78a0ee6c817",
-  "repositoryHeadScope": "evidence checkpoint at which the finalized deployment and three rejected create attempts were recorded",
+  "releaseHead": "50d133f959c77232cef9cbd71b8a6ac3ce8d247a",
+  "repositoryHead": "50d133f959c77232cef9cbd71b8a6ac3ce8d247a",
+  "repositoryHeadScope": "last committed source/evidence base before the finalized lifecycle release package",
   "source": {
     "path": "contracts/deal_mesh.py",
     "bytes": 25773,
@@ -100,19 +100,20 @@
     "timestampAvailability": "UNAVAILABLE",
     "sender": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
     "returnedHash": "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
-    "status": "ACCEPTED",
+    "status": "FINALIZED",
     "executionResult": "FINISHED_WITH_RETURN",
     "result": "AGREE",
     "txExecutionHash": "0xee42e4d976126801e92336367b094560ecff5cc2979f4e43f7011f1089691db0",
-    "finality": "PENDING",
+    "finality": "FINALIZED",
     "actionDigestEncoding": "literal string",
     "dealIdObservedAtAccepted": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
     "stateObservedAtAccepted": "CREATED_A_COMMITTED",
     "offerObservedAtAccepted": "",
     "assessmentObservedAtAccepted": "",
     "bindingObservedAtAccepted": false,
-    "readBackNote": "The LATEST_FINAL SDK read view exposed CREATED_A_COMMITTED while the parent transaction remained ACCEPTED; no subsequent lifecycle write is authorized until the parent status is FINALIZED.",
-    "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0"
+    "readBackNote": "The corrected create transaction finalized successfully and its exact deal record was read back.",
+    "explorerUrl": "https://explorer-bradbury.genlayer.com/tx/0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
+    "finalizedReadBack": "CREATED_A_COMMITTED"
   },
   "absenceEvidence": {
     "latestNonce": 206,
@@ -138,42 +139,54 @@
       "pendingNonce": 206,
       "latestDealForDeployer": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
       "state": "CREATED_A_COMMITTED",
-      "parentStatus": "ACCEPTED",
+      "parentStatus": "FINALIZED",
       "parentExecution": "FINISHED_WITH_RETURN",
       "noOfferAssessmentOrBinding": true,
-      "finalityObserved": false
+      "finalityObserved": true
     }
   },
   "lifecycle": {
-    "status": "CREATE_DEAL_ACCEPTED_FINALITY_PENDING",
+    "status": "BOUND",
     "createDealHash": "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0",
-    "dealIdObservedAtAccepted": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
-    "assessmentHashes": [],
-    "callbackHashes": [],
-    "finalVerdict": "NOT_REACHED",
-    "finalState": "CREATED_A_COMMITTED_OBSERVED_BEFORE_PARENT_FINALITY",
-    "isBound": "NOT_RUN",
-    "createDealFailure": "attempt 4 FINALIZED / FINISHED_WITH_ERROR / CANONICALIZATION_FAILED",
-    "finalityBlocker": "corrected attempt 5 remains ACCEPTED after bounded reconciliation; no next write permitted"
+    "dealId": "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a",
+    "acceptHash": "0x9b4062e1763ec10b2c8709f4a35d85c97343bb9913aba41043e4ab36e2186a8f",
+    "offerHash": "0x77a1751faddc9b6a952ea16e2895ea8f9d69590e4f3217b471964321e0689c60",
+    "offerDigest": "0xe9967bcc89af22d77068dbe374f0d6e11b5f5941b832a4ee00d6c2c71620f6b1",
+    "assessmentHash": "0xbc936bbf937a3ec06095d518c8f47999ddb591c653c4840523037e68d194b796",
+    "assessmentCallbackHash": "0x7fdba86d51bd2f48f78b12c02148a137a0cba2dec39cc57b0b88659dd963a333",
+    "assessmentId": "0x9067f19087f7deaba024e7ab7e1e1559c6a92107cc0f26005152f6f399257591",
+    "finalVerdict": "MATCH",
+    "assessmentFinalState": "ASSESSED_MATCH_FINALIZED",
+    "bindHash": "0xe59593d0c117799ea512c2152b2609e2a08f4897a500709c3ccc9bc047881dc5",
+    "bindingCallbackHash": "0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6",
+    "bindingRequestId": "0xd7359a2699cc7ee9b55fa1513b31b7de7a068643e7f2b86eab8f2c37abbec80d",
+    "finalState": "BOUND",
+    "boundBy": "0x6311de989ab01ae4da77d36cc45d495fbcd4b7a8",
+    "agreementDigest": "0xe92613f220fcecc5902449755b5ad94945fc0cae0b969ab31aa411ccd653a78f",
+    "isBound": {
+      "exact": true,
+      "wrongDigest": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "wrongDigestResult": false
+    }
   },
   "publicFrontend": {
     "status": "NOT_DEPLOYED",
     "provider": null,
     "deploymentId": null,
     "url": null,
-    "reason": "Vercel has no authenticated session; GitHub Pages is not enabled and the configured GitHub CLI token is invalid"
+    "reason": "No authenticated Vercel session; GitHub CLI token is invalid; no alternate hosting CLI is configured"
   },
-  "releaseGate": "BLOCKED",
+  "releaseGate": "BLOCKED_PUBLIC_FRONTEND_HOSTING",
   "verification": {
-    "finalCiUrl": "https://github.com/GIFTEDLOV/dealmesh/actions/runs/33244529860",
-    "finalCiHead": "02dff03d9697668743088fdb5dc3e6c4ad4c63e5",
-    "status": "SUCCESS"
+    "finalCiUrl": null,
+    "finalCiHead": null,
+    "status": "PENDING_EXACT_HEAD_CI"
   },
   "limitations": [
-    "The live DealMesh lifecycle stopped after corrected create attempt 5 remained ACCEPTED; no later write is permitted until its parent reaches FINALIZED.",
-    "No Bradbury MATCH, finalized callback, BOUND, or is_bound evidence exists.",
-    "Bradbury RPC capacity rejected all three create_deal attempts before a hash was returned.",
-    "Attempt 4 returned a hash but failed with CANONICALIZATION_FAILED because action_digest was encoded as an integer instead of a string; corrected attempt 5 used the literal string and executed successfully but remains ACCEPTED.",
+    "The Bradbury lifecycle proof is complete through BOUND, but no public frontend URL is available because no authenticated hosting provider or enabled fallback is configured.",
+    "The three historical Bradbury capacity rejections, the integer-encoded attempt 4 failure, and the corrected finalized lifecycle are preserved separately.",
+    "Bradbury RPC capacity rejected all three initial create_deal attempts before a hash was returned.",
+    "Attempt 4 returned a hash but failed with CANONICALIZATION_FAILED because action_digest was encoded as an integer instead of a string; corrected attempt 5 used the literal string and executed successfully.",
     "No public frontend was deployed because no authenticated hosting session or enabled fallback was available.",
     "Hosted Studio implementation evidence is not an independently verified BOUND receipt package.",
     "V1 has no payments, escrow, settlement, external evidence, action execution, or legal identity."

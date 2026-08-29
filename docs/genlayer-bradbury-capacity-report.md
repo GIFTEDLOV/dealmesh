@@ -1,8 +1,9 @@
 # Bradbury capacity escalation report
 
-Status: release evidence report; attempt 4 failed from incorrect calldata
-typing, and one corrected create write was then broadcast. No sixth write or
-later lifecycle write was attempted.
+Status: historical capacity evidence; attempt 4 failed from incorrect calldata
+typing, and the corrected create write plus one locked lifecycle later
+finalized successfully. No additional deal or replacement lifecycle was
+attempted.
 
 ## Network and deployment
 
@@ -30,7 +31,7 @@ separately below.
 | 3 | unavailable | -32005 | `transaction gas rate limit exceeded: node is at capacity` | 340 | none |
 
 | 4 | unavailable | — | `FINALIZED` / `FINISHED_WITH_ERROR`; `action_digest` was encoded as an integer instead of a string | — | `0xb90302aae0826778cb05bd503ce3ebc61a40b812f8b8ccf89bdcd0dabf349a0f` |
-| 5 | unavailable | — | `ACCEPTED` / `FINISHED_WITH_RETURN` / `AGREE`; finality pending after bounded reconciliation | — | `0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0` |
+| 5 | unavailable | — | `FINALIZED` / `FINISHED_WITH_RETURN` / `AGREE`; exact `CREATED_A_COMMITTED` read-back | — | `0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0` |
 
 Before attempt 4, read-only absence evidence recorded latest and pending
 deployer nonce as `203/203`, with `get_latest_deal_for(deployer)` empty. After
@@ -38,10 +39,11 @@ that failed hash finalized, the preserved evidence recorded `204/204`. Before
 corrected attempt 5, the fresh absence read was `205/205` with an empty creator
 lookup. After its single broadcast, nonce was `206/206` and the creator lookup
 returned deal `0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a`.
-The exact parent remains `ACCEPTED` with `FINISHED_WITH_RETURN`; the read view
-shows `CREATED_A_COMMITTED`, but finality has not been observed, so no accept,
-offer, assessment, callback, bind, or downstream authorization was sent.
-The corrected hash was not replaced or rebroadcast.
+The corrected parent finalized successfully. The subsequent lifecycle finalized
+accept, offer, assessment `MATCH`, the assessment callback, Party B binding,
+the binding callback, `BOUND`, exact `is_bound=true`, and wrong-digest
+`false`. The complete lifecycle evidence is recorded in
+`artifacts/bradbury-release-manifest.json`; no hash was replaced or rebroadcast.
 
 ## Tooling context
 

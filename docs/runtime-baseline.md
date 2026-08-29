@@ -33,7 +33,9 @@ Two hosted Studio test modules implement the complete DealMesh lifecycle with
 two funded accounts, finalized writes, semantic validator execution, and
 finalized callback/read-back assertions. The preserved repository evidence does
 not contain sufficient immutable receipts or hashes to independently prove a
-final `BOUND` authorization. A separate local Studio preflight returned zero validators from
+hosted final `BOUND` authorization. The Bradbury lifecycle evidence now contains
+the independently reconciled final `MATCH`, callbacks, `BOUND`, exact
+`is_bound=true`, and wrong-digest `false` results. A separate local Studio preflight returned zero validators from
 `sim_getAllValidators` and reported a dead validator process; that is a local
 infrastructure precondition failure, not a semantic or contract verdict.
 
@@ -71,9 +73,10 @@ Attempt 4 returned
 finalized with `FINISHED_WITH_ERROR` / `CANONICALIZATION_FAILED` because the
 action digest was encoded as an integer. Corrected attempt 5 returned
 `0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0` with a
-literal string digest and `FINISHED_WITH_RETURN` / `AGREE`, but remains
-`ACCEPTED` pending finality. Its `CREATED_A_COMMITTED` record is visible in the
-`LATEST_FINAL` read view; no later lifecycle write has been sent.
+literal string digest and finalized with `FINISHED_WITH_RETURN` / `AGREE`.
+The subsequent locked Bradbury lifecycle finalized accept, offer, assessment
+`MATCH`, assessment callback, Party B binding, binding callback, and exact
+`BOUND`; complete transaction evidence is recorded in the release manifest.
 
 ## Testing/tooling commands
 
@@ -99,6 +102,6 @@ Local Studio finality and full project integration (when enabled):
     $env:DEALMESH_STUDIO='1'
     python -m pytest tests/integration -m studio -q
 
-No additional Bradbury write is part of this baseline. A future lifecycle run
-must reconcile the recorded capacity evidence and pass a fresh precondition
-gate before exactly one new write.
+The public frontend is not yet deployed because the available Vercel session is
+unauthenticated and the configured GitHub CLI token is invalid. No hosting
+credential is stored in the repository.

@@ -97,7 +97,7 @@ def verify() -> list[str]:
     final_attempt = attempts[4]
     require(final_attempt.get("sequence") == 5, "corrected create attempt sequence mismatch")
     require(final_attempt.get("returnedHash") == "0x6fdc962873707ecfaccf2aedbd071a26fcbffe89473066747d3f2e9182caf0b0", "corrected create hash mismatch")
-    require(final_attempt.get("status") == "ACCEPTED", "corrected create status mismatch")
+    require(final_attempt.get("status") == "FINALIZED", "corrected create status mismatch")
     require(final_attempt.get("executionResult") == "FINISHED_WITH_RETURN", "corrected create execution mismatch")
     require(final_attempt.get("actionDigestEncoding") == "literal string", "corrected action digest encoding mismatch")
     require(pre_attempt4.get("deployerLatestNonce") == 203 and pre_attempt4.get("deployerPendingNonce") == 203, "pre-attempt nonce evidence mismatch")
@@ -109,11 +109,38 @@ def verify() -> list[str]:
     require(reconciliation.get("traceError") == "CANONICALIZATION_FAILED", "create failure trace mismatch")
     require(reconciliation.get("rootCause") == "action_digest was encoded as an integer instead of the required literal string", "create failure root cause mismatch")
     require(reconciliation.get("actionDigestDecodedValue") == "77194726158210796949047323339125271902179989777093709359638389338608753093290", "create failure decoded action digest mismatch")
-    require(manifest.get("lifecycleStatus") == "CREATE_DEAL_ACCEPTED_FINALITY_PENDING", "manifest lifecycle status mismatch")
+    require(manifest.get("lifecycleStatus") == "BOUND", "manifest lifecycle status mismatch")
     require(manifest.get("publicFrontend", {}).get("status") == "NOT_DEPLOYED", "manifest frontend status mismatch")
     writes = manifest.get("writes", [])
-    require(len(writes) == 3 and writes[0].get("operation") == "deploy" and writes[1].get("operation") == "create_deal" and writes[2].get("operation") == "create_deal", "manifest write records mismatch")
-    require(manifest.get("transactionHashes") == [EXPECTED_DEPLOYMENT, failed_attempt.get("returnedHash"), final_attempt.get("returnedHash")], "transaction hash list mismatch")
+    expected_operations = [
+        "deploy",
+        "create_deal",
+        "create_deal",
+        "accept_participation",
+        "submit_offer",
+        "submit_offer",
+        "assess_offer",
+        "finalize_assessment",
+        "bind_match",
+        "finalize_binding",
+    ]
+    require([write.get("operation") for write in writes] == expected_operations, "manifest write records mismatch")
+    require(manifest.get("transactionHashes") == [
+        EXPECTED_DEPLOYMENT,
+        failed_attempt.get("returnedHash"),
+        final_attempt.get("returnedHash"),
+        "0x9b4062e1763ec10b2c8709f4a35d85c97343bb9913aba41043e4ab36e2186a8f",
+        "0x77a1751faddc9b6a952ea16e2895ea8f9d69590e4f3217b471964321e0689c60",
+        "0xbc936bbf937a3ec06095d518c8f47999ddb591c653c4840523037e68d194b796",
+        "0x7fdba86d51bd2f48f78b12c02148a137a0cba2dec39cc57b0b88659dd963a333",
+        "0xe59593d0c117799ea512c2152b2609e2a08f4897a500709c3ccc9bc047881dc5",
+        "0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6",
+    ], "transaction hash list mismatch")
+    require(writes[4].get("returnedHash") is None and writes[4].get("status") == "RECONCILED_NO_BROADCAST" and writes[4].get("executionResult") == "NOT_BROADCAST", "historical offer absence record mismatch")
+    for write in writes[3:4] + writes[5:]:
+        require(write.get("status") == "FINALIZED", f"{write.get('operation')} is not FINALIZED")
+        require(write.get("executionResult") == "FINISHED_WITH_RETURN", f"{write.get('operation')} execution mismatch")
+    require("BOUND" in writes[-1].get("resultingState", ""), "final binding state mismatch")
 
     source = ROOT / "contracts" / "deal_mesh.py"
     source_bytes = source.read_bytes()
@@ -178,19 +205,22 @@ def verify() -> list[str]:
     require(pre_corrected.get("latestNonce") == 205 and pre_corrected.get("pendingNonce") == 205 and pre_corrected.get("latestDealForDeployer") == "", "corrected pre-attempt evidence mismatch")
     require(post_corrected.get("latestNonce") == 206 and post_corrected.get("pendingNonce") == 206 and post_corrected.get("latestDealForDeployer") == "0xbb929ef5d867b71c6e8566ecac3c6cf39aa4dda78e4dbccc9e4ee27ac95b991a", "corrected post-attempt evidence mismatch")
     lifecycle = proof.get("lifecycle", {})
-    require(lifecycle.get("status") == "CREATE_DEAL_ACCEPTED_FINALITY_PENDING", "final proof lifecycle status mismatch")
+    require(lifecycle.get("status") == "BOUND", "final proof lifecycle status mismatch")
     require(lifecycle.get("createDealHash") == final_attempt.get("returnedHash"), "final proof corrected create hash mismatch")
-    require(lifecycle.get("assessmentHashes") == [] and lifecycle.get("callbackHashes") == [], "final proof contains lifecycle hashes")
-    require(lifecycle.get("finalVerdict") == "NOT_REACHED", "final proof verdict mismatch")
-    require(lifecycle.get("finalState") == "CREATED_A_COMMITTED_OBSERVED_BEFORE_PARENT_FINALITY", "final proof final state mismatch")
-    require(lifecycle.get("isBound") == "NOT_RUN", "final proof is_bound must be NOT_RUN")
+    require(lifecycle.get("assessmentHash") == "0xbc936bbf937a3ec06095d518c8f47999ddb591c653c4840523037e68d194b796", "final proof assessment hash mismatch")
+    require(lifecycle.get("assessmentCallbackHash") == "0x7fdba86d51bd2f48f78b12c02148a137a0cba2dec39cc57b0b88659dd963a333", "final proof assessment callback mismatch")
+    require(lifecycle.get("finalVerdict") == "MATCH", "final proof verdict mismatch")
+    require(lifecycle.get("assessmentFinalState") == "ASSESSED_MATCH_FINALIZED", "final proof assessment state mismatch")
+    require(lifecycle.get("bindingCallbackHash") == "0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6", "final proof binding callback mismatch")
+    require(lifecycle.get("finalState") == "BOUND", "final proof final state mismatch")
+    require(lifecycle.get("isBound", {}).get("exact") is True and lifecycle.get("isBound", {}).get("wrongDigestResult") is False, "final proof is_bound result mismatch")
     require(proof.get("publicFrontend", {}).get("status") == "NOT_DEPLOYED", "final proof frontend status mismatch")
     require(proof.get("publicFrontend", {}).get("url") is None, "final proof unexpectedly contains a frontend URL")
-    require(proof.get("releaseGate") == "BLOCKED", "final proof release gate mismatch")
+    require(proof.get("releaseGate") == "BLOCKED_PUBLIC_FRONTEND_HOSTING", "final proof release gate mismatch")
     corrected = proof.get("correctedCreateAttempt", {})
     require(corrected.get("returnedHash") == final_attempt.get("returnedHash"), "proof corrected create hash mismatch")
-    require(corrected.get("status") == "ACCEPTED" and corrected.get("executionResult") == "FINISHED_WITH_RETURN", "proof corrected create terminal evidence mismatch")
-    require(corrected.get("finality") == "PENDING" and corrected.get("stateObservedAtAccepted") == "CREATED_A_COMMITTED", "proof corrected finality evidence mismatch")
+    require(corrected.get("status") == "FINALIZED" and corrected.get("executionResult") == "FINISHED_WITH_RETURN", "proof corrected create terminal evidence mismatch")
+    require(corrected.get("finality") == "FINALIZED" and corrected.get("finalizedReadBack") == "CREATED_A_COMMITTED", "proof corrected finality evidence mismatch")
     require(lifecycle.get("status") == manifest.get("lifecycleStatus"), "proof and manifest lifecycle mismatch")
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -199,11 +229,11 @@ def verify() -> list[str]:
         require("complete GenLayer Project" in text, f"{path} does not identify the contribution as a complete Project")
         require(EXPECTED_CONTRACT in text and EXPECTED_DEPLOYMENT in text, f"{path} lacks finalized deployment evidence")
         lower = text.lower()
-        require("lifecycle has not started" in lower or "lifecycle remains unstarted" in lower or "lifecycle remains incomplete" in lower or "lifecycle is incomplete" in lower or "pending finality" in lower, f"{path} overclaims live lifecycle")
+        require("bound" in lower and "match" in lower and "is_bound" in lower, f"{path} lacks finalized BOUND proof language")
         require("canonicalization_failed" in lower, f"{path} lacks final create failure evidence")
     candidate = (ROOT / "docs" / "candidate-gate.md").read_text(encoding="utf-8")
     require("STUDIO_INTEGRATION_GATE" in candidate and "hosted multi-validator" in candidate, "candidate gate hosted status missing")
-    require("RELEASE_GATE" in candidate and "capacity" in candidate.lower(), "candidate gate release blocker missing")
+    require("RELEASE_GATE" in candidate and ("hosting" in candidate.lower() or "capacity" in candidate.lower()), "candidate gate release blocker missing")
 
     return errors
 
