@@ -22,7 +22,7 @@ safe.
 | G. Differentiation | PASS | DealMesh forms a single bilateral agreement before execution; it does not rank bids, verify delivery, attribute fault, certify software, or settle an SLA. |
 | H. Continued use | PASS | The same reusable commitment/offer/authorization flow supports independent human and agent agreements. |
 | I. Proofability | PASS | The deterministic/mocked contract and frontend suites, linter validation, two hosted multi-validator DealMesh lifecycle implementations, and a finalized-callback authority probe exist. Local Studio remains blocked by an empty validator set. |
-| J. Honesty | PASS | Bradbury deployment is finalized and successfully executed. The one final create attempt returned a hash but failed with `CANONICALIZATION_FAILED` before creating a deal; no MATCH, callback, BOUND, or is_bound evidence is claimed. Hosting and lifecycle blockers are reported separately from semantic or contract behavior. |
+| J. Honesty | PASS | Bradbury deployment is finalized and successfully executed. Attempt 4 finalized with `CANONICALIZATION_FAILED` because the action digest was encoded as an integer; corrected attempt 5 executed successfully with a literal string digest but remains `ACCEPTED` pending finality. No MATCH, callback, BOUND, or is_bound evidence is claimed. |
 
 ## Current gate status
 
@@ -33,7 +33,7 @@ safe.
 | DETERMINISTIC_CI_GATE | PASS | Direct/mocked contract tests, frontend tests/build, and contract validation are green. |
 | STUDIO_INTEGRATION_GATE | PASS — hosted multi-validator Studio | Existing hosted implementations exercised multi-validator semantics and finalized callbacks; preserved evidence is insufficient to independently prove BOUND. |
 | LOCAL_STUDIO_HEALTH | BLOCKED — zero configured local validators | The current local `sim_getAllValidators` returns zero validators; this is a separate development-environment status and does not invalidate hosted proof. |
-| RELEASE_GATE | BLOCKED - create_deal execution failure, Bradbury capacity history, and unavailable public hosting | Deployment is finalized and successfully executed; the final create attempt failed before deal creation and no final authorization or public frontend evidence exists. |
+| RELEASE_GATE | BLOCKED - corrected create finality pending, prior Bradbury capacity, and unavailable public hosting | Deployment is finalized and successfully executed; attempt 4 failed from incorrect digest typing, while corrected attempt 5 is accepted with CREATED_A_COMMITTED visible in the read view but not finalized. No final authorization or public frontend evidence exists. |
 
 ## Finality gate
 
