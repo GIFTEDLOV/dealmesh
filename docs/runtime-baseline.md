@@ -97,12 +97,12 @@ Frontend:
     npm test
     npm run build
 
-Local Studio finality and full project integration (when enabled):
+Local Studio finality and complete contract integration (when enabled):
 
     $env:DEALMESH_STUDIO='1'
     python -m pytest tests/integration -m studio -q
 
-The public frontend is deployed through GitHub Pages at
+The optional reference frontend is deployed through GitHub Pages at
 https://giftedlov.github.io/dealmesh/ (deployment `6160405466`) and responds
 HTTP 200. No hosting credential is stored in the repository. Interactive
 browser smoke was unavailable because the release environment had no browser

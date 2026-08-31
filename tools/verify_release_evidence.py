@@ -168,7 +168,10 @@ def verify() -> list[str]:
                 require(actual_digest == parts[0], f"MANIFEST.sha256 mismatch: {relative}")
 
     require(proof.get("schema") == "dealmesh/final-release-proof/v1", "final proof schema mismatch")
-    require(proof.get("contributionType") == "Project", "final proof contribution type mismatch")
+    require(
+        proof.get("contributionType") == "Intelligent Contract",
+        "final proof contribution type mismatch",
+    )
     require(proof.get("repository") == "GIFTEDLOV/dealmesh", "final proof repository mismatch")
     require(re.fullmatch(r"[0-9a-f]{40}", str(proof.get("repositoryHead", ""))) is not None, "final proof repository head is not a commit")
     proof_source = proof.get("source", {})
@@ -231,14 +234,23 @@ def verify() -> list[str]:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     submission = (ROOT / "SUBMISSION.md").read_text(encoding="utf-8")
     for path, text in (("README.md", readme), ("SUBMISSION.md", submission)):
-        require("complete GenLayer Project" in text, f"{path} does not identify the contribution as a complete Project")
+        require(
+            "reusable GenLayer Intelligent Contract" in text,
+            f"{path} does not identify the contribution as a reusable Intelligent Contract",
+        )
         require(EXPECTED_CONTRACT in text and EXPECTED_DEPLOYMENT in text, f"{path} lacks finalized deployment evidence")
         lower = text.lower()
         require("bound" in lower and "match" in lower and "is_bound" in lower, f"{path} lacks finalized BOUND proof language")
         require("canonicalization_failed" in lower, f"{path} lacks final create failure evidence")
     candidate = (ROOT / "docs" / "candidate-gate.md").read_text(encoding="utf-8")
     require("STUDIO_INTEGRATION_GATE" in candidate and "hosted multi-validator" in candidate, "candidate gate hosted status missing")
-    require("RELEASE_GATE" in candidate and ("publicly available" in candidate.lower() or "hosting" in candidate.lower() or "capacity" in candidate.lower()), "candidate gate release status missing")
+    require(
+        "RELEASE_GATE" in candidate
+        and "`MATCH`" in candidate
+        and "`BOUND`" in candidate
+        and "wrong digest" in candidate.lower(),
+        "candidate gate release status missing",
+    )
 
     return errors
 

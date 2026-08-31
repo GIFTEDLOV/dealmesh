@@ -1,14 +1,14 @@
-# DealMesh Project scope
+# DealMesh Intelligent Contract scope
 
 ## Classification
 
-DealMesh is a GenLayer PROJECT contribution. The repository now contains the
-application-specific Intelligent Contract, wallet-backed GenLayerJS
-frontend, deterministic/mocked tests, and a genuine multi-validator Studio
-finality probe. Bradbury deployment is finalized and successfully executed,
-and the single locked live lifecycle has independently reached `BOUND` with
-exact downstream authorization checks. The production frontend is publicly
-available at https://giftedlov.github.io/dealmesh/ through GitHub Pages.
+DealMesh is a GenLayer INTELLIGENT CONTRACT contribution. The contract is a
+reusable bilateral commitment, semantic matching, finalized binding, and
+exact-authorization primitive. The repository also includes an optional
+wallet-backed GenLayerJS reference client, deterministic/mocked tests, and a
+genuine multi-validator Studio finality probe. Bradbury deployment is
+finalized and successfully executed, and the single locked live lifecycle has
+independently reached `BOUND` with exact downstream authorization checks.
 
 ## In scope
 

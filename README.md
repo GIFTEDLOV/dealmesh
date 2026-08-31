@@ -2,16 +2,18 @@
 
 ## Product
 
-DealMesh is a complete GenLayer Project for forming exact bilateral agreements
-between two wallet parties. Its application-specific Intelligent Contract
-owns immutable commitments, bounded semantic consensus, finalized binding,
-and exact downstream authorization. The complete user-facing workflow stores
-typed bounds and hashes and exposes authorization only for the exact deal and
-offer pair that passed the contract state machine.
+DealMesh is a reusable GenLayer Intelligent Contract for forming exact
+bilateral agreements between two wallet parties. It owns immutable
+commitments, bounded semantic consensus, finalized binding, and exact
+downstream authorization. Integrators can authorize only the exact deal and
+offer pair that passed the contract state machine. The included wallet
+frontend demonstrates the complete lifecycle but is not an independent source
+of authority.
 
 It never moves money, executes an action, selects financial parameters, ranks
-offers, or lets a model create or alter terms. The frontend is a wallet-backed
-GenLayerJS application; it does not compute or override authorization.
+offers, or lets a model create or alter terms. The optional frontend is a
+wallet-backed GenLayerJS reference client; it does not compute or override
+authorization.
 
 ## Problem
 
@@ -62,7 +64,8 @@ not a semantic verdict and has no fallback.
 - The contract owns sender identity, immutable commitments, canonical bytes,
   hashes, typed admissibility, semantic consensus, finality callbacks, exact
   offer identity, and binding authorization.
-- The frontend uses a read client and a wallet-backed write client. It submits
+- The optional reference frontend uses a read client and a wallet-backed write
+  client. It submits
   once, persists the returned hash immediately, waits for `FINALIZED`, checks
   `FINISHED_WITH_RETURN`, reads state back exactly, and recovers by known hash
   without rebroadcasting.
@@ -85,8 +88,8 @@ the action body. Plain participant text is on-chain and not private.
 
 ## Live proof
 
-The repository contains the application-specific production contract, the
-complete wallet-backed user-facing frontend workflow, deterministic direct
+The repository contains the production Intelligent Contract, an optional
+wallet-backed reference integration, deterministic direct
 tests, mocked semantic/validator tests, persistence and recovery tests, and a
 finalized-only callback authority probe. Existing hosted implementations
 exercised multi-validator semantics and finalized callbacks, but the preserved
@@ -137,8 +140,8 @@ The hosted Studio evidence is ephemeral test-network evidence, not a public
 deployment or production economic integration. Local Studio is currently
 blocked by its empty validator registry; this does not invalidate the recorded
 hosted semantic/callback exercise. The Bradbury lifecycle above is the
-independently reconciled live proof. The production frontend is publicly
-deployed at https://giftedlov.github.io/dealmesh/ through GitHub Pages
+independently reconciled live proof. The optional reference frontend is
+publicly deployed at https://giftedlov.github.io/dealmesh/ through GitHub Pages
 deployment 6160405466; its published HTML responds HTTP 200.
 
 ## Gate status
@@ -150,13 +153,13 @@ deployment 6160405466; its published HTML responds HTTP 200.
 | DETERMINISTIC_CI_GATE | PASS |
 | STUDIO_INTEGRATION_GATE | PASS — hosted multi-validator Studio implementation evidence; no independent BOUND receipt proof |
 | LOCAL_STUDIO_HEALTH | BLOCKED — zero configured local validators |
-| RELEASE_GATE | PASS — finalized Bradbury BOUND proof and public GitHub Pages frontend |
+| RELEASE_GATE | PASS — finalized Bradbury `MATCH`, callbacks, `BOUND`, exact authorization, and wrong-digest rejection |
 
 The hosted test implementations exercised multi-validator semantics and
 finalized callbacks, but the preserved repository evidence does not contain
 sufficient immutable receipts or hashes to independently prove a hosted
 `BOUND` authorization. Bradbury provides the independently reconciled live
-`MATCH` and `BOUND` proof above. The public frontend is available at
+`MATCH` and `BOUND` proof above. The optional reference frontend is available at
 https://giftedlov.github.io/dealmesh/. Interactive browser smoke was not run
 because no browser connector was available in the release environment; the
 published page and HTTP 200 were verified independently.

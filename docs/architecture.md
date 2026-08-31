@@ -130,9 +130,10 @@ state and require:
 Unknown, superseded, non-final, mismatched, or malformed records are rejected.
 DealMesh itself does not perform money movement or downstream execution.
 
-## Frontend lifecycle
+## Reference client lifecycle
 
-The GenLayerJS frontend creates separate read and wallet-backed write clients.
+The optional GenLayerJS reference client creates separate read and
+wallet-backed write clients.
 For each write it calls `writeContract` once and persists the returned hash
 before polling. Recovery enumerates persisted hashes and never reconstructs or
 rebroadcasts calldata. For `create_deal`, the persisted authenticated Party A

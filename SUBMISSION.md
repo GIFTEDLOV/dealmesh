@@ -2,14 +2,15 @@
 
 ## Product
 
-DealMesh is a complete GenLayer Project for forming exact bilateral agreements
-between two named wallet parties, including autonomous agents. Its
-application-specific Intelligent Contract owns immutable commitments, bounded
-semantic consensus, finalized binding, and exact downstream authorization.
+DealMesh is a reusable GenLayer Intelligent Contract for forming exact
+bilateral agreements between two named wallet parties, including autonomous
+agents. It owns immutable commitments, bounded semantic consensus, finalized
+binding, and exact downstream authorization. The included wallet frontend is
+an optional reference integration, not the submitted authority or category.
 
 ## Contribution type and trust problem
 
-Contribution type: **Project**.
+Contribution type: **Intelligent Contract**.
 
 Two parties can commit typed economic/operational bounds while expressing
 non-numeric requirements in bounded natural language. A centralized backend or
@@ -30,9 +31,9 @@ The lifecycle is `create_deal` → `accept_participation` → `submit_offer` →
 `assess_offer` → finalized assessment callback → require `MATCH` → Party B
 `bind_match` → finalized binding callback → `BOUND`. A consumer can authorize
 only the exact `(deal_id, offer_digest)` pair in the finalized `BOUND` state.
-The frontend reads live state, broadcasts once, persists each hash immediately,
-reconciles that same hash to `FINALIZED` with successful execution, reads exact
-state back, and never rebroadcasts after uncertainty.
+The reference frontend reads live state, broadcasts once, persists each hash
+immediately, reconciles that same hash to `FINALIZED` with successful
+execution, reads exact state back, and never rebroadcasts after uncertainty.
 
 ## Repository and Bradbury evidence
 
@@ -66,8 +67,8 @@ the exact literal digest string and finalized successfully as
   finalized callback `0x5b004fd398c7d3988c615ff077d018ce6ae7c6fd0161d6b24144a1050704fdb6`.
 
 The final contract read-back is `BOUND`; exact `is_bound` is `true` and the
-deliberate wrong digest returns `false`. The production frontend is publicly
-deployed at https://giftedlov.github.io/dealmesh/ through GitHub Pages
+deliberate wrong digest returns `false`. An optional reference frontend is
+publicly deployed at https://giftedlov.github.io/dealmesh/ through GitHub Pages
 deployment `6160405466`; the published page responds HTTP 200.
 
 Existing hosted Studio implementations exercised multi-validator semantics and
@@ -86,18 +87,18 @@ canonicalization, content integrity, schema/bounds validation, deterministic
 admissibility, semantic adjudication, consensus, native finality, and exact
 authorization. Private keys and seed phrases are never handled by the app.
 
-## Limitations and capacity blocker
+## Limitations
 
 V1 does not provide legal identity, external-world evidence, web access,
 payments, escrow, payouts, settlement, action execution, negotiation,
 counteroffers, delivery disputes, or privacy for on-chain text. An action digest
 identifies committed action bytes; DealMesh does not inspect or execute them.
-The Bradbury release now has independently reconciled live authorization: the
+The Bradbury release has independently reconciled live authorization: the
 locked lifecycle reached `BOUND`, and exact and wrong-digest authorization
-reads returned `true` and `false`. The remaining release blocker is public
-frontend hosting, not lifecycle evidence.
+reads returned `true` and `false`. There is no release blocker for the
+Intelligent Contract submission.
 
-Public frontend:
+Optional reference frontend:
 
 - URL: https://giftedlov.github.io/dealmesh/
 - GitHub Pages deployment: `6160405466`
